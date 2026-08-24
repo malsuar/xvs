@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.DS_Store
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.venv/
+build/
+dist/
+outputs/mplconfig/
+outputs/*.npz
+outputs/*.png
+outputs/*.pdf

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the accompanying EXOVEL manuscript and this software record."
+title: "Exomoon Velocity Shadow Toolkit"
+version: "0.1.0"
+date-released: "2026-08-24"
+authors:
+  - family-names: "Sucerquia"
+    given-names: "S."
+abstract: "Forward models and observability tools for Exomoon Velocity Shadows in high-resolution planetary transmission spectroscopy."
+license: "MIT"
+repository-code: "https://github.com/malsuar/xvs"
+keywords:
+  - exomoons
+  - exoplanets
+  - transmission spectroscopy
+  - Doppler tomography

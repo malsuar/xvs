@@ -1,0 +1,135 @@
+% Suggested text for the XDS Letter.
+% The main-text section is intentionally short; methodological details are
+% deferred to the Appendix.
+
+\subsection{A detectability sweet spot}
+\label{sec:sweetspot}
+
+The detectability of the XDS is not controlled by the satellite alone, but by
+the combined atmospheric, rotational, and dynamical properties of the
+planet--moon system.  To identify the most favourable regime, we performed an
+exploratory search over synthetic systems satisfying simple Roche, Hill-stability,
+and rotational-breakup constraints (Appendix~\ref{app:sweetspot};
+Fig.~\ref{fig:xds-sweetspot}).  The search
+shows that high-S/N XDS signals preferentially arise for inflated, low-density
+giant planets around relatively small stars, with extended H/He atmospheres,
+moderate projected rotation, and close satellites.  In the adopted observing
+setup, detectable configurations cluster around
+$M_{\rm p}\simeq0.1$--$0.4\,M_{\rm J}$, $R_{\rm p}\gtrsim1.2\,R_{\rm J}$,
+$\rho_{\rm p}\lesssim0.15\,{\rm g\,cm^{-3}}$, $v_{\rm eq}\simeq6$--$15\,
+{\rm km\,s^{-1}}$, and $a_{\rm m}\simeq2$--$4\,R_{\rm p}$.  The strongest
+synthetic cases correspond to super-puffy planets, for which the large scale
+height boosts the atmospheric transmission signal while the moon remains close
+enough to imprint a coherent time--velocity distortion during transit.
+
+This result should be interpreted as a detectability map rather than a
+population prediction.  It suggests that cold long-period giants are not
+automatically optimal for XDS searches despite their favourable Hill spheres;
+instead, the most promising targets are low-gravity, inflated giants with long
+enough transits and sufficiently rapid atmospheric rotation.
+
+\begin{figure*}
+\centering
+\includegraphics[width=\textwidth]{xds_paper_snr_scatter_maps_lhs100k_ref1500_seed11.png}
+\caption{
+Exploratory detectability search for the Exomoon Doppler Shadow.
+Grey points show dynamically allowed synthetic systems refined with the
+forward model, while coloured points indicate configurations with
+${\rm S/N}_{\rm XDS}\ge5$ under the adopted observing assumptions
+($R=10^5$, continuum S/N per resolution element of 300, 200 spectral lines,
+one transit, and a 10 ppm systematic floor).  Cyan circles highlight the
+highest-S/N detectable systems.  Detectable configurations cluster around
+inflated low-density planets, large atmospheric scale heights, moderate
+rotational velocities, and close satellites.
+}
+\label{fig:xds-sweetspot}
+\end{figure*}
+
+
+\appendix
+\section{Exploratory sweet-spot search}
+\label{app:sweetspot}
+
+We complemented the forward model with an exploratory detectability search
+designed to identify where the XDS signal is most favourable.  The search is
+not a population synthesis and does not assume an occurrence rate for moons.
+Its purpose is to map the regions of parameter space in which the signal would
+be detectable under explicit, reproducible assumptions.
+
+We sampled synthetic systems in the parameters
+$(M_{\rm p},R_{\rm p},R_\star,P_{\rm p},P_{\rm rot},a_{\rm m},R_{\rm m})$.
+The sampled ranges were
+$M_{\rm p}=0.08$--$2\,M_{\rm J}$,
+$R_{\rm p}=0.75$--$1.75\,R_{\rm J}$,
+$R_\star=0.45$--$1.05\,R_\odot$,
+$P_{\rm p}=3$--$300\,{\rm d}$,
+$P_{\rm rot}=3$--$24\,{\rm h}$,
+$a_{\rm m}=1.8$--$12\,R_{\rm p}$, and
+$R_{\rm m}=0.12$--$0.35\,R_{\rm p}$.  Logarithmic sampling was used for
+$M_{\rm p}$, $P_{\rm p}$, and $P_{\rm rot}$; the remaining quantities were
+sampled linearly.  To improve coverage of the multidimensional space we used a
+Latin-hypercube design rather than independent random draws.
+
+Each system was first passed through a fast physical screen.  We required the
+moon to lie outside the larger of the fluid Roche limit and the hard geometric
+limit $1+R_{\rm m}/R_{\rm p}$, and inside $0.35\,R_{\rm H}$, where
+$R_{\rm H}$ is the planetary Hill radius.  We also required the planetary spin
+period to exceed $1.15$ times the breakup period.  The transit duration was
+estimated for a central circular transit and systems with
+$T_{\rm dur}<1.5\,{\rm h}$ were discarded.  The equilibrium temperature was
+estimated assuming zero albedo, full redistribution, $M_\star=0.8\,M_\odot$,
+and $T_\star=5200\,{\rm K}$; systems with $T_{\rm eq}<250\,{\rm K}$ were
+excluded from this detectability exercise.
+
+For the atmospheric scaling, we used
+\begin{equation}
+H=\frac{k_{\rm B}T}{\mu m_{\rm H}g},
+\end{equation}
+with $\mu=2.3$, and approximated the effective line depth as
+\begin{equation}
+\delta_{\rm atm}\simeq
+\frac{2R_{\rm p}N_HH}{R_\star^2},
+\end{equation}
+where $N_H=5$ effective scale heights.  Candidate systems were ranked using a
+fast score proportional to the atmospheric line depth, the projected lunar
+area, a rotational Doppler factor, and a broad timing window in
+$P_{\rm m}/T_{\rm dur}$.  This score was used only to select systems for
+refinement; final S/N values were computed with the full time--velocity forward
+model.
+
+In the fiducial run we screened $10^5$ Latin-hypercube samples.  Of these,
+$26954$ satisfied the fast physical filters.  We then refined the 1500
+highest-scoring systems with the full XDS forward model, adopting
+$R=10^5$, continuum S/N per resolution element of 300, $N_{\rm lines}=200$,
+one transit, and a systematic floor of 10 ppm.  The matched-filter S/N was
+computed as
+\begin{equation}
+{\rm S/N}_{\rm XDS} =
+\left[\sum_{t,v}\left(\frac{\Delta F_{\rm XDS}(t,v)}{\sigma}\right)^2
+\right]^{1/2}
+\sqrt{N_{\rm lines}N_{\rm tr}},
+\end{equation}
+including the finite-exposure smearing penalty described in
+Appendix~\ref{app:observability}.
+
+The refined sample contained 268 systems with ${\rm S/N}\ge5$, 72 with
+${\rm S/N}\ge10$, and 11 with ${\rm S/N}\ge20$.  The highest-S/N synthetic
+case reached ${\rm S/N}=83.2$ and had
+$M_{\rm p}=0.138\,M_{\rm J}$,
+$R_{\rm p}=1.75\,R_{\rm J}$,
+$\rho_{\rm p}=0.034\,{\rm g\,cm^{-3}}$,
+$R_\star=0.49\,R_\odot$,
+$T_{\rm eq}=434\,{\rm K}$,
+$v_{\rm eq}=10.1\,{\rm km\,s^{-1}}$,
+$a_{\rm m}=2.17\,R_{\rm p}$, and
+$P_{\rm m}/T_{\rm dur}=20.6$.  These values are not proposed as a typical
+system.  Rather, they identify the physical direction in which the XDS becomes
+most detectable: very low surface gravity, a large atmospheric scale height,
+moderate rotational broadening, and a close satellite whose shadow remains
+coherent over the transit.
+
+The main limitation of this exercise is astrophysical plausibility.  The most
+favourable systems are super-puffy planets, and future work should impose
+stronger constraints from atmospheric escape, tidal evolution, moon survival,
+and realistic molecular line lists before converting this detectability map
+into a target ranking.
