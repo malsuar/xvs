@@ -22,7 +22,8 @@ from xds.cell_blocking import blocked_cell_fractions
 
 def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_phases=False,
              moon_radius=.12, radial_sample_fraction=.5, fractional=False, order=16,
-             n_velocities=401, velocity_limit=30., v_eq=12., line_sigma=1.5):
+             n_velocities=401, velocity_limit=30., v_eq=12., line_sigma=1.5,
+             return_result=False):
     time = np.linspace(-2., 2., nt)
     velocity = np.linspace(-velocity_limit, velocity_limit, n_velocities)
     # Normal=(b/a,0,sqrt(1-(b/a)^2)); conjunction at mean anomaly pi/2.
@@ -78,6 +79,8 @@ def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_
             observed=observe_residual(result,atmospheric_line_depth(atmosphere),
                                       replace(obs,exposure_start_offset=phase*5/60),InstrumentConfig())
             record[f'snr_phase_{phase}']=float(np.linalg.norm(observed.signal/observed.noise)*np.sqrt(obs.n_lines))
+    if return_result:
+        return record,time,fractions,exact,result
     return record,time,fractions,exact
 
 

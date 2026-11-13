@@ -86,6 +86,7 @@ def run_xds_model(
     positions = moon_positions(time, moon)
 
     absorption = np.empty((time.size, velocity.size))
+    delta = np.empty_like(absorption)
     illumination_fraction = np.empty(time.size)
     observer_fraction = np.empty(time.size)
     combined_fraction = np.empty(time.size)
@@ -107,7 +108,11 @@ def run_xds_model(
             obs = blocked if along > 0 else np.zeros_like(blocked)
             active = np.maximum(ill if sim.use_illumination_shadow else 0.,
                                 obs if sim.use_observer_occultation else 0.)
-            absorption[idx] = weighted_absorption(kernels, terminator.weights*(1-active), planet.line_depth)
+            # Sum only missing contributions: avoid subtracting near-equal profiles.
+            selected = np.flatnonzero(active > 0)
+            delta[idx] = -weighted_absorption(kernels[selected],
+                (terminator.weights*active)[selected], planet.line_depth)
+            absorption[idx] = reference + delta[idx]
             illumination_fraction[idx] = terminator.weights @ ill
             observer_fraction[idx] = terminator.weights @ obs
             combined_fraction[idx] = np.sum(terminator.weights*active)
@@ -127,6 +132,7 @@ def run_xds_model(
 
         weights = np.where(active, 0.0, terminator.weights)
         absorption[idx] = weighted_absorption(kernels, weights, planet.line_depth)
+        delta[idx] = absorption[idx] - reference
         illumination_fraction[idx] = np.sum(terminator.weights[masks.illumination])
         observer_fraction[idx] = np.sum(terminator.weights[masks.observer])
         combined_fraction[idx] = np.sum(terminator.weights[active])
@@ -136,7 +142,7 @@ def run_xds_model(
         velocity=velocity,
         reference_absorption=np.repeat(reference[None, :], time.size, axis=0),
         absorption=absorption,
-        delta_absorption=absorption - reference[None, :],
+        delta_absorption=delta,
         moon_positions=positions,
         illumination_fraction=illumination_fraction,
         observer_fraction=observer_fraction,

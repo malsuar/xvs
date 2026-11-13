@@ -38,3 +38,20 @@ def test_partial_overlap_rotation_and_quadrature():
         p=[3.,d*np.cos(angle),d*np.sin(angle)]
         f=blocked_cell_fractions(240,8,.03,p,q,order=32)
         assert abs(f.mean()/exact-1)<1e-4
+
+
+def test_fractional_deficit_equivalent_width_and_mask_partition():
+    from dataclasses import replace
+    sim=SimulationConfig(geometry='projected_annulus',spin_convention='observer',
+        blocking_integration='fractional',n_azimuths=120,n_radii=4,
+        n_times=31,n_velocities=501,velocity_min=-40,velocity_max=40)
+    planet=PlanetConfig(line_depth=2.5,line_sigma=1.5)
+    moon=MoonConfig(radius=.3,inclination=0,phase=.08)
+    combined=run_xds_model(planet,moon,sim)
+    ill=run_xds_model(planet,moon,replace(sim,use_observer_occultation=False))
+    obs=run_xds_model(planet,moon,replace(sim,use_illumination_shadow=False))
+    assert np.max(combined.combined_fraction)>0
+    assert np.allclose(combined.delta_absorption,ill.delta_absorption+obs.delta_absorption)
+    integral=np.trapz(-combined.delta_absorption,combined.velocity,axis=1)
+    expected=2.5*1.5*np.sqrt(2*np.pi)*combined.combined_fraction
+    assert np.allclose(integral,expected,atol=1e-12)
