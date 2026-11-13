@@ -35,7 +35,7 @@ def main():
     rows = []
     for nt, nv in [(61, 121), (121, 121), (61, 241), (121, 241)]:
         result = run_xds_model(PlanetConfig(), MoonConfig(), replace(sim, n_times=nt, n_velocities=nv))
-        report = detectability_report(result, AtmosphereConfig(), ObservationConfig(), InstrumentConfig())
+        report = detectability_report(result, AtmosphereConfig(), ObservationConfig(), InstrumentConfig(), method="legacy")
         rows.append({"n_times": nt, "n_velocities": nv, "snr": report.matched_filter_snr})
     for row in rows:
         row["snr_ratio_to_base"] = row["snr"] / rows[0]["snr"]

@@ -86,3 +86,5 @@ class ObservationConfig:
     n_transits: int = 1
     n_lines: int = 30
     systematic_floor: float = 0.0
+    snr_reference_exposure_time: float = 1.0 / 60.0
+    snr_reference_resolution: float = 100_000.0
