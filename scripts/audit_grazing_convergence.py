@@ -19,14 +19,15 @@ from xds.spectra import gaussian_profiles
 from xds.terminator import build_projected_annulus
 
 
-def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_phases=False):
+def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_phases=False,
+             moon_radius=.12, radial_sample_fraction=.5):
     time = np.linspace(-2., 2., nt)
     velocity = np.linspace(-30., 30., 401)
     # Normal=(b/a,0,sqrt(1-(b/a)^2)); conjunction at mean anomaly pi/2.
-    moon = MoonConfig(radius=.12, semi_major_axis=3., period=21.238292071543107,
+    moon = MoonConfig(radius=moon_radius, semi_major_axis=3., period=21.238292071543107,
                       inclination=np.rad2deg(np.arcsin(b/3)), longitude_node=90., phase=.25)
     positions = moon_positions(time, moon)
-    grid = build_projected_annulus(na, nr, .03)
+    grid = build_projected_annulus(na, nr, .03,radial_sample_fraction=radial_sample_fraction)
     # Shift azimuths by a fraction of one cell without moving the physical orbit.
     angle = cell_phase*2*np.pi/na
     y,z = grid.positions[:,1].copy(),grid.positions[:,2].copy()
@@ -40,11 +41,11 @@ def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_
     # is the projected disk wherever moon x != 0 (all epochs used here).
     assert np.all(abs(positions[:,0]) > 0)
     for k,p in enumerate(positions):
-        mask = np.sum((grid.positions[:,1:]-p[1:])**2,axis=1) <= .12**2
+        mask = np.sum((grid.positions[:,1:]-p[1:])**2,axis=1) <= moon_radius**2
         fractions[k] = grid.weights[mask].sum()
         if np.any(mask): signal[k] = -(grid.weights[mask] @ kernels[mask])
     d = np.linalg.norm(positions[:,1:],axis=1)
-    exact = (overlap(1.03,.12,d)-overlap(1.,.12,d))/(np.pi*(1.03**2-1))
+    exact = (overlap(1.03,moon_radius,d)-overlap(1.,moon_radius,d))/(np.pi*(1.03**2-1))
     result = SimpleNamespace(time=time,velocity=velocity,delta_absorption=signal)
     atmosphere = AtmosphereConfig(planet_mass_jupiter=.7,planet_radius_jupiter=1.1,
                                  stellar_radius_solar=1.,temperature=500.)
@@ -57,7 +58,7 @@ def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_
     active = np.flatnonzero(fractions>0)
     duration = 0. if len(active)==0 else time[active[-1]]-time[active[0]]
     # Outer contact span includes any intervening gap for a central encounter.
-    theta = np.arcsin(np.sqrt((1.15**2-b*b)/(9-b*b)))
+    theta = np.arcsin(np.sqrt(((1.03+moon_radius)**2-b*b)/(9-b*b)))
     exact_span = 2*moon.period/(2*np.pi)*theta
     record = dict(impact_rp=b,n_azimuths=na,n_radii=nr,n_times=nt,snr=float(snr),
                   area_relative_error=float(area_error),

@@ -5,6 +5,17 @@ from xds.shadow import compute_shadow_masks
 from xds.terminator import build_projected_annulus
 
 
+def test_radial_sampling_preserves_cell_areas_and_bounds():
+    base=build_projected_annulus(120,8,.03)
+    for phase in [.25,.5,.75]:
+        grid=build_projected_annulus(120,8,.03,radial_sample_fraction=phase)
+        assert np.array_equal(grid.weights,base.weights)
+        assert np.array_equal(grid.cell_area,base.cell_area)
+        r2=np.sum(grid.positions**2,axis=1).reshape(8,120)
+        edges=np.linspace(1.,1.03**2,9)
+        assert np.all(r2>edges[:-1,None]) and np.all(r2<edges[1:,None])
+
+
 def test_area_radii_and_velocity_second_moment():
     h = 0.1
     grid = build_projected_annulus(360, 16, h)

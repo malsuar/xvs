@@ -23,20 +23,25 @@ def build_projected_annulus(
     n_radii: int,
     thickness: float,
     observer_direction=(-1.0, 0.0, 0.0),
+    radial_sample_fraction: float = 0.5,
 ) -> TerminatorGrid:
     """Uniform effective annulus at projected radii [1, 1+thickness].
 
     Positions are sky-plane representatives, not 3D ray formation locations.
     Equal-area radial cells and midpoint azimuths avoid duplicated endpoints.
+    Radial samples default to cell midpoints in r squared; other fractions
+    are provided for quadrature-sensitivity audits with unchanged cell areas.
     Angular coordinates are stored in the legacy longitude/latitude fields.
     """
     if n_azimuths < 4 or n_radii < 1:
         raise ValueError("annulus requires at least four azimuths and one radial cell")
     if not np.isfinite(thickness) or thickness <= 0:
         raise ValueError("annulus thickness must be finite and positive")
+    if not np.isfinite(radial_sample_fraction) or not 0 < radial_sample_fraction < 1:
+        raise ValueError("radial sample fraction must lie strictly between zero and one")
     u, v, _ = sky_basis(observer_direction)
     edges_squared = np.linspace(1.0, (1.0 + thickness)**2, n_radii + 1)
-    radii = np.sqrt(0.5 * (edges_squared[:-1] + edges_squared[1:]))
+    radii = np.sqrt(edges_squared[:-1] + radial_sample_fraction*np.diff(edges_squared))
     angles = (np.arange(n_azimuths) + 0.5) * 2.0 * np.pi / n_azimuths
     radius, angle = np.meshgrid(radii, angles, indexing="ij")
     positions = (radius[..., None] *
