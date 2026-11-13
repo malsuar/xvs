@@ -118,6 +118,17 @@ convergence and injection controls. The native pilot signal is not detectable
 under the adopted noise assumptions; amplified recovery controls are numerical
 tests, not physical detection predictions. ExoMol data have a separate license.
 
+The follow-up [atmospheric-degeneracy experiment](docs/co_atmospheric_degeneracy.md)
+compares uniform and two-limb temperature, CO abundance and wind changes:
+
+```bash
+PYTHONPATH=src python scripts/atmospheric_nuisance_recovery.py
+PYTHONPATH=src python scripts/audit_atmospheric_nuisance.py
+```
+
+It tests known-orbit recovery after atmospheric fitting, not a blind search or
+a proof of uniqueness against arbitrary atmospheric structure.
+
 ### Limitations
 
 This is a minimal forward model intended for reproducibility and exploratory

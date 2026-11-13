@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import numpy as np
 from scipy.special import voigt_profile
+from scipy.interpolate import CubicSpline
 from .observability import SPEED_OF_LIGHT_KM_S as C
 
 
@@ -68,8 +69,49 @@ def bin_average(grid,values,edges):
     return np.diff(integral,axis=-1)/np.diff(edges)
 
 
+def cubic_shifted_bin_average(grid,profile,edges,shifts):
+    """Integrate smooth shifted profiles directly over detector bins.
+
+    The antiderivative avoids resampling a full fine spectrum for every local
+    velocity and makes small wind derivatives independent of linear-grid kinks.
+    """
+    shifted_edges=np.asarray(edges)[None,:]-np.asarray(shifts)[:,None]
+    if (np.any(np.diff(edges)<=0) or shifted_edges.min()<grid[0]
+            or shifted_edges.max()>grid[-1]):
+        raise ValueError('shifted detector bins must lie inside padded spectrum')
+    integral=CubicSpline(grid,profile,extrapolate=False).antiderivative()
+    return np.diff(integral(shifted_edges),axis=1)/np.diff(edges)
+
+
 def depth_orthogonal_component(signal,reference):
     """Remove one freely fitted depth coefficient per exposure (equal noise)."""
     norm=np.sum(reference**2,axis=1,keepdims=True)
     coefficient=np.divide(np.sum(signal*reference,axis=1,keepdims=True),norm,out=np.zeros_like(norm),where=norm>0)
     return signal-coefficient*reference
+
+
+def nuisance_basis(templates,rtol=1e-8):
+    """Per-exposure orthonormal spectral nuisance rows (equal noise metric).
+
+    Input shape is (n_modes, n_exposures, n_bins). Unit-normalizing each
+    nonzero mode makes rank decisions independent of parameter units.
+    Zero singular modes are retained as zero rows for a stable array shape.
+    """
+    a=np.asarray(templates,dtype=float)
+    if a.ndim!=3 or not np.all(np.isfinite(a)) or not 0<rtol<1:
+        raise ValueError('finite (mode,time,bin) templates and 0<rtol<1 required')
+    a=np.swapaxes(a,0,1)
+    norms=np.linalg.norm(a,axis=-1,keepdims=True)
+    a=np.divide(a,norms,out=np.zeros_like(a),where=norms>0)
+    _,singular,vh=np.linalg.svd(a,full_matrices=False)
+    active=singular>rtol*singular[:,:1]
+    return vh*active[...,None],np.sum(active,axis=1)
+
+
+def project_nuisance(signal,basis):
+    """Remove the fitted per-exposure nuisance subspace from a spectral map."""
+    signal=np.asarray(signal)
+    if signal.shape!=(basis.shape[0],basis.shape[2]):
+        raise ValueError('signal and per-exposure basis shapes do not agree')
+    coefficients=np.einsum('tv,tmv->tm',signal,basis)
+    return signal-np.einsum('tm,tmv->tv',coefficients,basis)

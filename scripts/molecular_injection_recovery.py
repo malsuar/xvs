@@ -17,10 +17,12 @@ from xds.cell_blocking import blocked_cell_fractions
 from xds.stellar_surface import background_intensity
 from xds.detectability import atmospheric_line_depth,scale_height_km,JUPITER_RADIUS_KM
 from xds.dynamics import moon_period_hours
-from xds.molecular import load_co_lines,co_absorption,bin_average,depth_orthogonal_component,C
+from xds.molecular import (load_co_lines,co_absorption,bin_average,depth_orthogonal_component,
+                          cubic_shifted_bin_average,C)
 
 
-def synthesize(root,na=480,nr=32,nt=1201,dv=.2,shift_step=.25,wing_sigma=100.,n_scale_heights=10.):
+def build_molecular_geometry(na=480,nr=32,nt=1201,shift_step=.25,n_scale_heights=10.,split_limbs=False):
+    """Fixed projected domain based on H(640 K); reusable for atmospheric changes."""
     atm=AtmosphereConfig(planet_mass_jupiter=.7,planet_radius_jupiter=1.1,temperature=640.,effective_scale_heights=n_scale_heights)
     hp=scale_height_km(atm);rp=1.1*JUPITER_RADIUS_KM;h=n_scale_heights*hp/rp
     star=StellarSurfaceConfig(695700/rp,(30/365.25)**(2/3)*149597870.7/rp,720.,u1=.4,u2=.25)
@@ -36,41 +38,66 @@ def synthesize(root,na=480,nr=32,nt=1201,dv=.2,shift_step=.25,wing_sigma=100.,n_
     frac=(velocity-shifts[index])/shift_step
     layer=np.repeat(np.arange(nr),na);flat=layer*len(shifts)+index
     time=np.linspace(-2,2,nt);positions=moon_positions(time,moon)
-    full=np.zeros((nt,nr,len(shifts)));missing=np.zeros_like(full)
+    groups=[np.ones_like(velocity)] if not split_limbs else [velocity<0,velocity>=0]
+    full=np.zeros((len(groups),nt,nr,len(shifts)));missing=np.zeros_like(full)
     for k,p in enumerate(positions):
         intensity=background_intensity(grid.positions,time[k],star)
         weights=grid.weights*intensity
         blocked=blocked_cell_fractions(na,nr,h,p,.09,order=16)
-        for dest,w in [(full,weights),(missing,weights*blocked)]:
-            dest[k]=(np.bincount(flat,weights=w*(1-frac),minlength=nr*len(shifts))+
-                     np.bincount(flat+1,weights=w*frac,minlength=nr*len(shifts))).reshape(nr,-1)
+        for g,region in enumerate(groups):
+            for dest,w in [(full,weights*region),(missing,weights*blocked*region)]:
+                dest[g,k]=(np.bincount(flat,weights=w*(1-frac),minlength=nr*len(shifts))+
+                           np.bincount(flat+1,weights=w*frac,minlength=nr*len(shifts))).reshape(nr,-1)
     tedges=np.arange(49)*obs.exposure_time-2
-    full=bin_average(time,full.reshape(nt,-1).T,tedges).T.reshape(48,nr,-1)
-    missing=bin_average(time,missing.reshape(nt,-1).T,tedges).T.reshape(48,nr,-1)
+    full=np.array([bin_average(time,a.reshape(nt,-1).T,tedges).T.reshape(48,nr,-1) for a in full])
+    missing=np.array([bin_average(time,a.reshape(nt,-1).T,tedges).T.reshape(48,nr,-1) for a in missing])
+    return dict(full=full,missing=missing,shifts=shifts,
+        radii=np.sqrt(1+(np.arange(nr)+.5)*((1+h)**2-1)/nr),rp=rp,
+        scale=atmospheric_line_depth(atm)*(1+h/2),time=(tedges[:-1]+tedges[1:])/2,
+        noise=float(np.hypot(1/300*np.sqrt((1/60)/obs.exposure_time),obs.systematic_floor)))
+
+
+def synthesize(root,na=480,nr=32,nt=1201,dv=.2,shift_step=.25,wing_sigma=100.,n_scale_heights=10.,
+               geometry=None,temperature=640.,co_mixing_ratio=1e-4,wind_km_s=0.,shift_interpolation='linear'):
+    """Scalar atmosphere, or (negative, positive velocity) limb parameters.
+
+    Temperature changes excitation, thermal width and hydrostatic slant column,
+    keeping the opaque Rp/P0 and the outer computational radius fixed.
+    Positive wind adds to the code's signed rotational velocity coordinate.
+    """
+    if geometry is None:
+        geometry=build_molecular_geometry(na,nr,nt,shift_step,n_scale_heights)
+    if shift_interpolation not in ('linear','cubic'):raise ValueError('unknown Doppler interpolation')
+    full=geometry['full'];missing=geometry['missing'];shifts=geometry['shifts']
+    rp=geometry['rp'];scale=geometry['scale'];noise=geometry['noise']
     xmin=C*np.log(4250/4300);xmax=C*np.log(4400/4300)
     x=np.arange(xmin-50,xmax+50+dv/2,dv);nu=4300*np.exp(x/C)
     dvinst=C/100000
     edges=xmin+np.arange(int((xmax-xmin)/dvinst)+1)*dvinst
-    lines=load_co_lines(root/'data/exomol/CO_Li2015',640.)
     reference=np.zeros((48,len(edges)-1));signal=np.zeros_like(reference)
-    radii=np.sqrt(1+(np.arange(nr)+.5)*((1+h)**2-1)/nr)
     profiles=[];columns=[]
-    for j,r in enumerate(radii):
-        pbar=.001*np.exp(-(r-1)*rp/hp)
-        # Isothermal tangent-column approximation; constant CO mixing 1e-4.
-        column=1e-4*(pbar*1e5/(1.380649e-23*640.)/1e6)*np.sqrt(2*np.pi*(r*rp*1e5)*(hp*1e5))
-        local=co_absorption(nu,lines,640.,pbar,column,wing_sigma=wing_sigma)
-        profiles.append(local);columns.append(column)
-        broadened=gaussian_filter1d(local,dvinst/np.sqrt(8*np.log(2))/dv,mode='constant',truncate=8.)
-        library=np.array([np.interp(x-s,x,broadened,left=0,right=0) for s in shifts])
-        library=bin_average(x,library,edges)
-        reference+=full[:,j]@library
-        signal-=missing[:,j]@library
-    # Exact annular area, rather than the earlier thin-annulus approximation.
-    scale=atmospheric_line_depth(atm)*(1+h/2)
-    noise=float(np.hypot(1/300*np.sqrt((1/60)/obs.exposure_time),obs.systematic_floor))
+    ng=len(full)
+    temps=np.broadcast_to(temperature,(ng,));abundances=np.broadcast_to(co_mixing_ratio,(ng,))
+    winds=np.broadcast_to(wind_km_s,(ng,))
+    if np.any(temps<=0) or np.any(abundances<=0):raise ValueError('temperature and abundance must be positive')
+    for g,(temp,abundance,wind) in enumerate(zip(temps,abundances,winds)):
+        hp=scale_height_km(AtmosphereConfig(planet_mass_jupiter=.7,planet_radius_jupiter=1.1,temperature=float(temp)))
+        lines=load_co_lines(root/'data/exomol/CO_Li2015',float(temp))
+        for j,r in enumerate(geometry['radii']):
+            pbar=.001*np.exp(-(r-1)*rp/hp)
+            column=abundance*(pbar*1e5/(1.380649e-23*temp)/1e6)*np.sqrt(2*np.pi*(r*rp*1e5)*(hp*1e5))
+            local=co_absorption(nu,lines,temp,pbar,column,wing_sigma=wing_sigma)
+            profiles.append(local);columns.append(column)
+            broadened=gaussian_filter1d(local,dvinst/np.sqrt(8*np.log(2))/dv,mode='constant',truncate=8.)
+            if shift_interpolation=='cubic':
+                library=cubic_shifted_bin_average(x,broadened,edges,shifts+wind)
+            else:
+                library=np.array([np.interp(x-s-wind,x,broadened,left=0,right=0) for s in shifts])
+                library=bin_average(x,library,edges)
+            reference+=full[g,:,j]@library
+            signal-=missing[g,:,j]@library
     return dict(reference=scale*reference,signal=scale*signal,noise=noise,
-        time=(tedges[:-1]+tedges[1:])/2,wavenumber=4300*np.exp((edges[:-1]+edges[1:])/2/C),
+        time=geometry['time'],wavenumber=4300*np.exp((edges[:-1]+edges[1:])/2/C),
         input_wavenumber=nu,local_profiles=np.array(profiles),column_cm2=np.array(columns),
         n_lines=len(lines.wavenumber),partition=lines.partition,
         retained_strength_fraction=lines.retained_strength_fraction,annulus_area_scale=scale)
