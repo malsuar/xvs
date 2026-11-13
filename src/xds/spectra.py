@@ -6,7 +6,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .config import MoonConfig, PlanetConfig, SimulationConfig
+from .config import MoonConfig, PlanetConfig, SimulationConfig, StellarSurfaceConfig
+from .stellar_surface import background_intensity
 from .moon_orbit import moon_positions
 from .rotation import line_of_sight_velocity
 from .shadow import compute_shadow_masks
@@ -53,6 +54,7 @@ def run_xds_model(
     planet: PlanetConfig,
     moon: MoonConfig,
     sim: SimulationConfig,
+    stellar_surface: StellarSurfaceConfig | None = None,
 ) -> XDSResult:
     """Run the velocity-resolved XDS forward model."""
 
@@ -83,6 +85,9 @@ def run_xds_model(
 
     kernels = gaussian_profiles(velocity, v_los, planet.line_sigma)
     reference = weighted_absorption(kernels, terminator.weights, planet.line_depth)
+    reference_map = np.repeat(reference[None, :], time.size, axis=0)
+    if stellar_surface is not None and sim.geometry != 'projected_annulus':
+        raise ValueError('stellar surface weighting requires projected annulus geometry')
     positions = moon_positions(time, moon)
 
     absorption = np.empty((time.size, velocity.size))
@@ -99,6 +104,11 @@ def run_xds_model(
             raise ValueError("fractional blocking requires projected annulus and parallel equal ray directions")
 
     for idx, moon_pos in enumerate(positions):
+        local_weights=terminator.weights
+        if stellar_surface is not None:
+            local_weights=terminator.weights*background_intensity(
+                terminator.positions,time[idx],stellar_surface,sim.observer_direction)
+            reference_map[idx]=weighted_absorption(kernels,local_weights,planet.line_depth)
         if sim.blocking_integration == "fractional":
             blocked = blocked_cell_fractions(sim.n_azimuths, sim.n_radii,
                 planet.atmosphere_half_width, moon_pos, moon.radius,
@@ -111,8 +121,8 @@ def run_xds_model(
             # Sum only missing contributions: avoid subtracting near-equal profiles.
             selected = np.flatnonzero(active > 0)
             delta[idx] = -weighted_absorption(kernels[selected],
-                (terminator.weights*active)[selected], planet.line_depth)
-            absorption[idx] = reference + delta[idx]
+                (local_weights*active)[selected], planet.line_depth)
+            absorption[idx] = reference_map[idx] + delta[idx]
             illumination_fraction[idx] = terminator.weights @ ill
             observer_fraction[idx] = terminator.weights @ obs
             combined_fraction[idx] = np.sum(terminator.weights*active)
@@ -130,9 +140,9 @@ def run_xds_model(
         if sim.use_observer_occultation:
             active |= masks.observer
 
-        weights = np.where(active, 0.0, terminator.weights)
+        weights = np.where(active, 0.0, local_weights)
         absorption[idx] = weighted_absorption(kernels, weights, planet.line_depth)
-        delta[idx] = absorption[idx] - reference
+        delta[idx] = absorption[idx] - reference_map[idx]
         illumination_fraction[idx] = np.sum(terminator.weights[masks.illumination])
         observer_fraction[idx] = np.sum(terminator.weights[masks.observer])
         combined_fraction[idx] = np.sum(terminator.weights[active])
@@ -140,7 +150,7 @@ def run_xds_model(
     return XDSResult(
         time=time,
         velocity=velocity,
-        reference_absorption=np.repeat(reference[None, :], time.size, axis=0),
+        reference_absorption=reference_map,
         absorption=absorption,
         delta_absorption=delta,
         moon_positions=positions,

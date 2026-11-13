@@ -7,6 +7,7 @@ from .config import (
     ObservationConfig,
     PlanetConfig,
     SimulationConfig,
+    StellarSurfaceConfig,
 )
 from .spectra import XDSResult, run_xds_model
 
@@ -17,6 +18,7 @@ __all__ = [
     "ObservationConfig",
     "PlanetConfig",
     "SimulationConfig",
+    "StellarSurfaceConfig",
     "XDSResult",
     "run_xds_model",
 ]

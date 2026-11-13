@@ -91,3 +91,14 @@ class ObservationConfig:
     snr_reference_exposure_time: float = 1.0 / 60.0
     snr_reference_resolution: float = 100_000.0
     exposure_start_offset: float = 0.0
+
+
+@dataclass(frozen=True)
+class StellarSurfaceConfig:
+    """Quadratic continuum intensity and circular transit geometry in Rp/h."""
+    radius_rp: float
+    orbital_separation_rp: float
+    orbital_period_hours: float
+    impact_parameter: float = 0.0
+    u1: float = 0.0
+    u2: float = 0.0
