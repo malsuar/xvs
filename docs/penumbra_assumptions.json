@@ -1,0 +1,8 @@
+{
+  "stellar_radius_rp": 8.8465079373153,
+  "stellar_distance_rp": 359.44239576867403,
+  "stellar_angular_radius_approx_rad": 0.024611754321292242,
+  "maximum_approx_blur_rp": 0.07383526296387673,
+  "maximum_background_radius_rp": 7.283393113556585,
+  "direct_ray_uniform_star_fully_backed": true
+}
