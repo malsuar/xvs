@@ -51,6 +51,7 @@ class SimulationConfig:
     geometry: str = "legacy"
     n_azimuths: int = 360
     n_radii: int = 8
+    spin_convention: str = "legacy"
 
 
 @dataclass(frozen=True)

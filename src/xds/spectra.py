@@ -76,6 +76,7 @@ def run_xds_model(
         planet.spin_inclination,
         planet.spin_obliquity,
         sim.observer_direction,
+        convention=sim.spin_convention,
     )
 
     kernels = gaussian_profiles(velocity, v_los, planet.line_sigma)
