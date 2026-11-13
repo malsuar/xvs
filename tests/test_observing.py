@@ -43,3 +43,13 @@ def test_photon_noise_fixed_duration_exposure_invariance():
         measured = observe_residual(result, 1., ObservationConfig(exposure_time=exp), InstrumentConfig())
         scores.append(np.linalg.norm(measured.signal)/measured.noise)
     assert np.allclose(scores, scores[0])
+
+
+def test_exposure_offset_integrates_correct_interval():
+    result=synthetic(101,601)
+    obs=ObservationConfig(exposure_time=.1,exposure_start_offset=.025)
+    measured=observe_residual(result,1.,obs,InstrumentConfig())
+    assert len(measured.time)==9
+    assert np.isclose(measured.time[0],.075)
+    base=observe_residual(result,1.,ObservationConfig(exposure_time=.1),InstrumentConfig())
+    assert np.allclose(measured.signal[0]/base.signal[0],1.075/1.05,atol=1e-10)

@@ -19,7 +19,7 @@ from xds.spectra import gaussian_profiles
 from xds.terminator import build_projected_annulus
 
 
-def evaluate(na, nr, b, nt=1201):
+def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_phases=False):
     time = np.linspace(-2., 2., nt)
     velocity = np.linspace(-30., 30., 401)
     # Normal=(b/a,0,sqrt(1-(b/a)^2)); conjunction at mean anomaly pi/2.
@@ -27,6 +27,11 @@ def evaluate(na, nr, b, nt=1201):
                       inclination=np.rad2deg(np.arcsin(b/3)), longitude_node=90., phase=.25)
     positions = moon_positions(time, moon)
     grid = build_projected_annulus(na, nr, .03)
+    # Shift azimuths by a fraction of one cell without moving the physical orbit.
+    angle = cell_phase*2*np.pi/na
+    y,z = grid.positions[:,1].copy(),grid.positions[:,2].copy()
+    grid.positions[:,1] = np.cos(angle)*y-np.sin(angle)*z
+    grid.positions[:,2] = np.sin(angle)*y+np.cos(angle)*z
     vlos = line_of_sight_velocity(grid.positions,12.,90.,0.,(-1,0,0),"observer")
     kernels = gaussian_profiles(velocity,vlos,1.5)
     signal = np.zeros((nt,len(velocity)))
@@ -44,7 +49,8 @@ def evaluate(na, nr, b, nt=1201):
     atmosphere = AtmosphereConfig(planet_mass_jupiter=.7,planet_radius_jupiter=1.1,
                                  stellar_radius_solar=1.,temperature=500.)
     obs = ObservationConfig(continuum_snr_per_resolution_element=300., exposure_time=5/60,
-                            n_lines=200,systematic_floor=10e-6)
+                            n_lines=200,systematic_floor=10e-6,
+                            exposure_start_offset=exposure_phase*5/60)
     measured = observe_residual(result,atmospheric_line_depth(atmosphere),obs,InstrumentConfig())
     snr = np.linalg.norm(measured.signal/measured.noise)*np.sqrt(obs.n_lines)
     area_error = abs(np.trapz(fractions,time)/np.trapz(exact,time)-1)
@@ -57,6 +63,12 @@ def evaluate(na, nr, b, nt=1201):
                   area_relative_error=float(area_error),
                   max_fraction_error=float(np.max(abs(fractions-exact))),
                   outer_span_error_minutes=float(60*(duration-exact_span)))
+    if all_exposure_phases:
+        from dataclasses import replace
+        for phase in [0.,.25,.5,.75]:
+            observed=observe_residual(result,atmospheric_line_depth(atmosphere),
+                                      replace(obs,exposure_start_offset=phase*5/60),InstrumentConfig())
+            record[f'snr_phase_{phase}']=float(np.linalg.norm(observed.signal/observed.noise)*np.sqrt(obs.n_lines))
     return record,time,fractions,exact
 
 

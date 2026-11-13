@@ -88,3 +88,4 @@ class ObservationConfig:
     systematic_floor: float = 0.0
     snr_reference_exposure_time: float = 1.0 / 60.0
     snr_reference_resolution: float = 100_000.0
+    exposure_start_offset: float = 0.0

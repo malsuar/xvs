@@ -28,7 +28,10 @@ def observe_residual(result, amplitude: float, observation: ObservationConfig,
     """
     t, v = np.asarray(result.time), np.asarray(result.velocity)
     exp = observation.exposure_time
+    offset = observation.exposure_start_offset
     resolution = instrument.spectral_resolution
+    if not np.isfinite(offset) or offset < 0 or offset >= exp:
+        raise ValueError("exposure_start_offset must be in [0, exposure_time)")
     if (exp <= 0 or resolution <= 0 or observation.snr_reference_exposure_time <= 0
             or observation.snr_reference_resolution <= 0
             or observation.continuum_snr_per_resolution_element <= 0
@@ -40,12 +43,12 @@ def observe_residual(result, amplitude: float, observation: ObservationConfig,
     if data.shape != (len(t), len(v)) or not np.all(np.isfinite(data)):
         raise ValueError("residual must be finite and match the grids")
     dv = SPEED_OF_LIGHT_KM_S / resolution
-    nt = int(np.floor((t[-1]-t[0])/exp + 1e-10))
+    nt = int(np.floor((t[-1]-t[0]-offset)/exp + 1e-10))
     nv = int(np.floor((v[-1]-v[0])/dv + 1e-10))
     if nt < 1 or nv < 1:
         raise ValueError("window must contain at least one full exposure and resolution element")
     # Anchor bins to the window start; discard incomplete final bins.
-    te = t[0] + np.arange(nt+1)*exp
+    te = t[0] + offset + np.arange(nt+1)*exp
     ve = v[0] + np.arange(nv+1)*dv
     time_weights = np.zeros((nt, len(t)))
     for i in range(nt):
