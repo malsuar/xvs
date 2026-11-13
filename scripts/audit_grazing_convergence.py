@@ -17,10 +17,11 @@ from xds.observing import observe_residual
 from xds.rotation import line_of_sight_velocity
 from xds.spectra import gaussian_profiles
 from xds.terminator import build_projected_annulus
+from xds.cell_blocking import blocked_cell_fractions
 
 
 def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_phases=False,
-             moon_radius=.12, radial_sample_fraction=.5):
+             moon_radius=.12, radial_sample_fraction=.5, fractional=False, order=16):
     time = np.linspace(-2., 2., nt)
     velocity = np.linspace(-30., 30., 401)
     # Normal=(b/a,0,sqrt(1-(b/a)^2)); conjunction at mean anomaly pi/2.
@@ -41,6 +42,12 @@ def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_
     # is the projected disk wherever moon x != 0 (all epochs used here).
     assert np.all(abs(positions[:,0]) > 0)
     for k,p in enumerate(positions):
+        if fractional:
+            blocked=blocked_cell_fractions(na,nr,.03,p,moon_radius,order=order,angular_phase=cell_phase)
+            mask=blocked>0
+            fractions[k]=grid.weights @ blocked
+            if np.any(mask): signal[k]=-((grid.weights[mask]*blocked[mask]) @ kernels[mask])
+            continue
         mask = np.sum((grid.positions[:,1:]-p[1:])**2,axis=1) <= moon_radius**2
         fractions[k] = grid.weights[mask].sum()
         if np.any(mask): signal[k] = -(grid.weights[mask] @ kernels[mask])

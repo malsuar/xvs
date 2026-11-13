@@ -52,6 +52,8 @@ class SimulationConfig:
     n_azimuths: int = 360
     n_radii: int = 8
     spin_convention: str = "legacy"
+    blocking_integration: str = "point"
+    blocking_quadrature_order: int = 16
 
 
 @dataclass(frozen=True)

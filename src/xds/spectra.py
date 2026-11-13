@@ -11,6 +11,8 @@ from .moon_orbit import moon_positions
 from .rotation import line_of_sight_velocity
 from .shadow import compute_shadow_masks
 from .terminator import TerminatorGrid, build_terminator, build_projected_annulus
+from .cell_blocking import blocked_cell_fractions
+from .geometry import unit_vector
 
 
 @dataclass(frozen=True)
@@ -88,7 +90,28 @@ def run_xds_model(
     observer_fraction = np.empty(time.size)
     combined_fraction = np.empty(time.size)
 
+    if sim.blocking_integration not in {"point", "fractional"}:
+        raise ValueError("unknown blocking integration")
+    if sim.blocking_integration == "fractional":
+        if sim.geometry != "projected_annulus" or not np.allclose(
+                unit_vector(sim.star_direction), unit_vector(sim.observer_direction)):
+            raise ValueError("fractional blocking requires projected annulus and parallel equal ray directions")
+
     for idx, moon_pos in enumerate(positions):
+        if sim.blocking_integration == "fractional":
+            blocked = blocked_cell_fractions(sim.n_azimuths, sim.n_radii,
+                planet.atmosphere_half_width, moon_pos, moon.radius,
+                sim.observer_direction, sim.blocking_quadrature_order)
+            along = np.dot(moon_pos, unit_vector(sim.observer_direction))
+            ill = blocked if along < 0 else np.zeros_like(blocked)
+            obs = blocked if along > 0 else np.zeros_like(blocked)
+            active = np.maximum(ill if sim.use_illumination_shadow else 0.,
+                                obs if sim.use_observer_occultation else 0.)
+            absorption[idx] = weighted_absorption(kernels, terminator.weights*(1-active), planet.line_depth)
+            illumination_fraction[idx] = terminator.weights @ ill
+            observer_fraction[idx] = terminator.weights @ obs
+            combined_fraction[idx] = np.sum(terminator.weights*active)
+            continue
         masks = compute_shadow_masks(
             terminator.positions,
             moon_pos,
