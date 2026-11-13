@@ -8,6 +8,19 @@ from .config import MoonConfig
 from .geometry import rotation_x, rotation_z
 
 
+def orbital_normal(config: MoonConfig) -> np.ndarray:
+    """Angular-momentum unit vector in the global frame (inclination from +z)."""
+    return (rotation_z(np.deg2rad(config.longitude_node))
+            @ rotation_x(np.deg2rad(config.inclination)) @ np.array([0., 0., 1.]))
+
+
+def spin_orbit_angle(config: MoonConfig, spin: np.ndarray) -> float:
+    """True mutual angle in degrees; zero denotes prograde alignment."""
+    spin = np.asarray(spin, dtype=float)
+    return float(np.rad2deg(np.arccos(np.clip(orbital_normal(config) @
+                 (spin / np.linalg.norm(spin)), -1., 1.))))
+
+
 def solve_kepler(mean_anomaly: np.ndarray, eccentricity: float, iterations: int = 8) -> np.ndarray:
     mean_anomaly = np.asarray(mean_anomaly, dtype=float)
     if eccentricity == 0.0:
