@@ -6,6 +6,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from .geometry import sky_basis
+
 
 @dataclass(frozen=True)
 class TerminatorGrid:
@@ -14,6 +16,35 @@ class TerminatorGrid:
     positions: np.ndarray
     weights: np.ndarray
     cell_area: np.ndarray
+
+
+def build_projected_annulus(
+    n_azimuths: int,
+    n_radii: int,
+    thickness: float,
+    observer_direction=(-1.0, 0.0, 0.0),
+) -> TerminatorGrid:
+    """Uniform effective annulus at projected radii [1, 1+thickness].
+
+    Positions are sky-plane representatives, not 3D ray formation locations.
+    Equal-area radial cells and midpoint azimuths avoid duplicated endpoints.
+    Angular coordinates are stored in the legacy longitude/latitude fields.
+    """
+    if n_azimuths < 4 or n_radii < 1:
+        raise ValueError("annulus requires at least four azimuths and one radial cell")
+    if not np.isfinite(thickness) or thickness <= 0:
+        raise ValueError("annulus thickness must be finite and positive")
+    u, v, _ = sky_basis(observer_direction)
+    edges_squared = np.linspace(1.0, (1.0 + thickness)**2, n_radii + 1)
+    radii = np.sqrt(0.5 * (edges_squared[:-1] + edges_squared[1:]))
+    angles = (np.arange(n_azimuths) + 0.5) * 2.0 * np.pi / n_azimuths
+    radius, angle = np.meshgrid(radii, angles, indexing="ij")
+    positions = (radius[..., None] *
+                 (np.cos(angle)[..., None] * u + np.sin(angle)[..., None] * v))
+    area = np.repeat(np.pi * np.diff(edges_squared) / n_azimuths, n_azimuths)
+    weights = area / area.sum()
+    return TerminatorGrid(angle.ravel(), np.zeros(angle.size),
+                          positions.reshape(-1, 3), weights, area)
 
 
 def build_terminator(

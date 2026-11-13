@@ -48,6 +48,9 @@ class SimulationConfig:
     use_illumination_shadow: bool = True
     use_observer_occultation: bool = True
     include_mirrored_terminator: bool = False
+    geometry: str = "legacy"
+    n_azimuths: int = 360
+    n_radii: int = 8
 
 
 @dataclass(frozen=True)

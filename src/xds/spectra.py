@@ -10,7 +10,7 @@ from .config import MoonConfig, PlanetConfig, SimulationConfig
 from .moon_orbit import moon_positions
 from .rotation import line_of_sight_velocity
 from .shadow import compute_shadow_masks
-from .terminator import TerminatorGrid, build_terminator
+from .terminator import TerminatorGrid, build_terminator, build_projected_annulus
 
 
 @dataclass(frozen=True)
@@ -54,11 +54,20 @@ def run_xds_model(
 ) -> XDSResult:
     """Run the velocity-resolved XDS forward model."""
 
-    terminator = build_terminator(
-        sim.n_longitudes,
-        sim.n_latitudes,
-        include_mirror=sim.include_mirrored_terminator,
-    )
+    if sim.geometry == "legacy":
+        terminator = build_terminator(
+            sim.n_longitudes, sim.n_latitudes,
+            include_mirror=sim.include_mirrored_terminator,
+        )
+    elif sim.geometry == "projected_annulus":
+        if sim.include_mirrored_terminator:
+            raise ValueError("mirroring applies only to legacy geometry")
+        terminator = build_projected_annulus(
+            sim.n_azimuths, sim.n_radii, planet.atmosphere_half_width,
+            sim.observer_direction,
+        )
+    else:
+        raise ValueError(f"Unknown geometry: {sim.geometry}")
     time = np.linspace(-0.5 * sim.transit_duration, 0.5 * sim.transit_duration, sim.n_times)
     velocity = np.linspace(sim.velocity_min, sim.velocity_max, sim.n_velocities)
     v_los = line_of_sight_velocity(
