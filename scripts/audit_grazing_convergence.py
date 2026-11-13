@@ -21,9 +21,10 @@ from xds.cell_blocking import blocked_cell_fractions
 
 
 def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_phases=False,
-             moon_radius=.12, radial_sample_fraction=.5, fractional=False, order=16):
+             moon_radius=.12, radial_sample_fraction=.5, fractional=False, order=16,
+             n_velocities=401, velocity_limit=30., v_eq=12., line_sigma=1.5):
     time = np.linspace(-2., 2., nt)
-    velocity = np.linspace(-30., 30., 401)
+    velocity = np.linspace(-velocity_limit, velocity_limit, n_velocities)
     # Normal=(b/a,0,sqrt(1-(b/a)^2)); conjunction at mean anomaly pi/2.
     moon = MoonConfig(radius=moon_radius, semi_major_axis=3., period=21.238292071543107,
                       inclination=np.rad2deg(np.arcsin(b/3)), longitude_node=90., phase=.25)
@@ -34,8 +35,8 @@ def evaluate(na, nr, b, nt=1201, cell_phase=0., exposure_phase=0., all_exposure_
     y,z = grid.positions[:,1].copy(),grid.positions[:,2].copy()
     grid.positions[:,1] = np.cos(angle)*y-np.sin(angle)*z
     grid.positions[:,2] = np.sin(angle)*y+np.cos(angle)*z
-    vlos = line_of_sight_velocity(grid.positions,12.,90.,0.,(-1,0,0),"observer")
-    kernels = gaussian_profiles(velocity,vlos,1.5)
+    vlos = line_of_sight_velocity(grid.positions,v_eq,90.,0.,(-1,0,0),"observer")
+    kernels = gaussian_profiles(velocity,vlos,line_sigma)
     signal = np.zeros((nt,len(velocity)))
     fractions = np.zeros(nt)
     # Parallel star/observer rays and sky-plane elements: union of both masks
