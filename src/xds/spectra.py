@@ -8,6 +8,7 @@ import numpy as np
 
 from .config import MoonConfig, PlanetConfig, SimulationConfig, StellarSurfaceConfig
 from .stellar_surface import background_intensity
+from .stellar_cells import stellar_cell_weights
 from .moon_orbit import moon_positions
 from .rotation import line_of_sight_velocity
 from .shadow import compute_shadow_masks
@@ -73,6 +74,7 @@ def run_xds_model(
     else:
         raise ValueError(f"Unknown geometry: {sim.geometry}")
     time = np.linspace(-0.5 * sim.transit_duration, 0.5 * sim.transit_duration, sim.n_times)
+    time = time + sim.time_center
     velocity = np.linspace(sim.velocity_min, sim.velocity_max, sim.n_velocities)
     v_los = line_of_sight_velocity(
         terminator.positions,
@@ -105,9 +107,18 @@ def run_xds_model(
 
     for idx, moon_pos in enumerate(positions):
         local_weights=terminator.weights
+        joint_blocked=None
         if stellar_surface is not None:
-            local_weights=terminator.weights*background_intensity(
-                terminator.positions,time[idx],stellar_surface,sim.observer_direction)
+            if sim.stellar_cell_integration:
+                if sim.blocking_integration!='fractional':
+                    raise ValueError('joint stellar integration requires fractional lunar blocking')
+                visible,joint_blocked=stellar_cell_weights(sim.n_azimuths,sim.n_radii,
+                    planet.atmosphere_half_width,time[idx],stellar_surface,moon_pos,
+                    moon.radius,sim.observer_direction,sim.blocking_quadrature_order)
+                local_weights=terminator.weights*visible
+            else:
+                local_weights=terminator.weights*background_intensity(
+                    terminator.positions,time[idx],stellar_surface,sim.observer_direction)
             reference_map[idx]=weighted_absorption(kernels,local_weights,planet.line_depth)
         if sim.blocking_integration == "fractional":
             blocked = blocked_cell_fractions(sim.n_azimuths, sim.n_radii,
@@ -120,8 +131,13 @@ def run_xds_model(
                                 obs if sim.use_observer_occultation else 0.)
             # Sum only missing contributions: avoid subtracting near-equal profiles.
             selected = np.flatnonzero(active > 0)
+            missing=local_weights*active
+            if joint_blocked is not None:
+                enabled=(along<0 and sim.use_illumination_shadow) or (along>0 and sim.use_observer_occultation)
+                missing=terminator.weights*joint_blocked if enabled else np.zeros_like(local_weights)
+                selected=np.flatnonzero(missing>0)
             delta[idx] = -weighted_absorption(kernels[selected],
-                (local_weights*active)[selected], planet.line_depth)
+                missing[selected], planet.line_depth)
             absorption[idx] = reference_map[idx] + delta[idx]
             illumination_fraction[idx] = terminator.weights @ ill
             observer_fraction[idx] = terminator.weights @ obs

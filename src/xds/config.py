@@ -54,6 +54,8 @@ class SimulationConfig:
     spin_convention: str = "legacy"
     blocking_integration: str = "point"
     blocking_quadrature_order: int = 16
+    stellar_cell_integration: bool = False
+    time_center: float = 0.0
 
 
 @dataclass(frozen=True)
