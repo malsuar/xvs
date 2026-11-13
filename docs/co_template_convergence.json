@@ -1,0 +1,15 @@
+{
+  "full_snr_relative_change": 0.0007557428192809246,
+  "depth_profiled_snr_relative_change": 0.0007969832467129567,
+  "residual_map_relative_norm_difference": 0.0010707840751508198,
+  "reference_map_relative_norm_difference": 0.0006625457644086203,
+  "fine_full_snr": 0.04431298478190071,
+  "fine_depth_profiled_snr": 0.03822201007148431,
+  "passes_1percent": true,
+  "heights_5.0_full_snr": 0.04253387173309401,
+  "heights_5.0_kinematic_snr": 0.03667461798462347,
+  "heights_5.0_kinematic_change_from10": 0.03971899212677665,
+  "heights_12.0_full_snr": 0.044290749150988504,
+  "heights_12.0_kinematic_snr": 0.03820129157874493,
+  "heights_12.0_kinematic_change_from10": 0.0002551299832629361
+}

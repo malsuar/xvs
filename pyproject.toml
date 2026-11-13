@@ -38,6 +38,7 @@ Repository = "https://github.com/malsuar/xvs"
 Issues = "https://github.com/malsuar/xvs/issues"
 
 [project.optional-dependencies]
+molecular = ["scipy>=1.11"]
 dev = [
   "pytest>=8",
 ]

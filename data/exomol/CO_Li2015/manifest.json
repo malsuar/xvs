@@ -1,0 +1,14 @@
+{
+  "dataset": "12C-16O Li2015, ExoMol",
+  "retrieved_date": "2026-11-13",
+  "source": "https://exomol.com/data/molecules/CO/12C-16O/Li2015/",
+  "citation": "Li et al. 2015, ApJS 216, 15, doi:10.1088/0067-0049/216/1/15",
+  "data_license": "CC-BY-SA-4.0",
+  "license_url": "https://exomol.com/data/licence/",
+  "files": [
+    {"name":"12C-16O__Li2015.states.bz2", "url":"https://www.exomol.com/db/CO/12C-16O/Li2015/12C-16O__Li2015.states.bz2", "sha256":"83ca303698873576e985482227c33a7b93f119c5bb200f9e7e542273eb6804e1"},
+    {"name":"12C-16O__Li2015.trans.bz2", "url":"https://www.exomol.com/db/CO/12C-16O/Li2015/12C-16O__Li2015.trans.bz2", "sha256":"20a9aa869fdede362300a26f818bad21130f1f2b73f477d38b2d39d8bb361410"},
+    {"name":"12C-16O__Li2015.pf", "url":"https://www.exomol.com/db/CO/12C-16O/Li2015/12C-16O__Li2015.pf", "sha256":"0a6c56318875a4cf6bfc7f8aa9b5609865025c922bf0ccf42f6b017c1ed29b43"},
+    {"name":"12C-16O__H2.broad", "url":"https://www.exomol.com/db/CO/12C-16O/12C-16O__H2.broad", "sha256":"5077a3b1f01f7bc39aaefe7ce6870f1aff53fe0dd25268137e7fdbd59146ca06"}
+  ]
+}

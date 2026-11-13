@@ -100,6 +100,26 @@ not required for installation. Regenerate them from the scripts above.
 
 ## Scientific Scope
 
+### Molecular Injection Pilot
+
+A separate CO line-by-line pilot uses traceable ExoMol data, radial atmospheric
+opacity, instrumental resolution and exposure integration. It compares a
+known-trajectory lunar signal with independent line-depth changes per exposure:
+
+```bash
+python -m pip install -e '.[molecular]'
+python scripts/fetch_co_template_data.py
+PYTHONPATH=src python scripts/molecular_injection_recovery.py
+PYTHONPATH=src python scripts/audit_co_template.py
+```
+
+See [the experiment report](docs/co_template_injection_recovery.md) for assumptions,
+convergence and injection controls. The native pilot signal is not detectable
+under the adopted noise assumptions; amplified recovery controls are numerical
+tests, not physical detection predictions. ExoMol data have a separate license.
+
+### Limitations
+
 This is a minimal forward model intended for reproducibility and exploratory
 extensions. It is not yet a full retrieval or population-inference framework.
 Current assumptions include a thin effective terminator, solid-body rotation,

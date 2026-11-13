@@ -12,3 +12,6 @@ outputs/mplconfig/
 outputs/*.npz
 outputs/*.png
 outputs/*.pdf
+data/exomol/CO_Li2015/*.bz2
+data/exomol/CO_Li2015/*.pf
+data/exomol/CO_Li2015/*.broad
