@@ -129,6 +129,18 @@ PYTHONPATH=src python scripts/audit_atmospheric_nuisance.py
 It tests known-orbit recovery after atmospheric fitting, not a blind search or
 a proof of uniqueness against arbitrary atmospheric structure.
 
+The [bounded nonlinear follow-up](docs/co_nonlinear_coherent_recovery.md) fits
+the actual CO family with smooth, bounded atmospheric histories and a coupled
+transparent-to-opaque lunar mask:
+
+```bash
+PYTHONPATH=src python scripts/nonlinear_co_recovery.py --n-mc 16
+```
+
+Its reduced-noise control keeps the physical moon unamplified. Reported
+`sqrt(delta chi2)` values are model separations, not calibrated discovery
+significances. Cached spectral grids can be regenerated and are not tracked.
+
 ### Limitations
 
 This is a minimal forward model intended for reproducibility and exploratory

@@ -9,6 +9,7 @@ __pycache__/
 build/
 dist/
 outputs/mplconfig/
+outputs/co_nonlinear_cache/
 outputs/*.npz
 outputs/*.png
 outputs/*.pdf

@@ -1,0 +1,19 @@
+{
+  "previous_pilot_max_absolute_differences": {
+    "reference": 0.0,
+    "signal": 0.0
+  },
+  "outer_boundary_16H_vs20H": [
+    {
+      "atmosphere": "reference",
+      "reference_difference_control_noise_norm": 0.005421640507225427,
+      "moon_difference_control_noise_norm": 7.6243683334801e-05
+    },
+    {
+      "atmosphere": "upper_T_CO",
+      "reference_difference_control_noise_norm": 0.005423617074303104,
+      "moon_difference_control_noise_norm": 9.744380258088784e-05
+    }
+  ],
+  "control_noise_ppm": 11.394654178131821
+}

@@ -21,7 +21,7 @@ from xds.molecular import (load_co_lines,co_absorption,bin_average,depth_orthogo
                           cubic_shifted_bin_average,C)
 
 
-def build_molecular_geometry(na=480,nr=32,nt=1201,shift_step=.25,n_scale_heights=10.,split_limbs=False):
+def build_molecular_geometry(na=480,nr=32,nt=1201,shift_step=.25,n_scale_heights=10.,split_limbs=False,n_exposures=48):
     """Fixed projected domain based on H(640 K); reusable for atmospheric changes."""
     atm=AtmosphereConfig(planet_mass_jupiter=.7,planet_radius_jupiter=1.1,temperature=640.,effective_scale_heights=n_scale_heights)
     hp=scale_height_km(atm);rp=1.1*JUPITER_RADIUS_KM;h=n_scale_heights*hp/rp
@@ -29,7 +29,7 @@ def build_molecular_geometry(na=480,nr=32,nt=1201,shift_step=.25,n_scale_heights
     planet=PlanetConfig(v_eq=12.,atmosphere_half_width=h)
     moon=MoonConfig(radius=.09,semi_major_axis=3.,period=float(moon_period_hours(3,.7,1.1)),
                     inclination=0.,longitude_node=90.,phase=.75)
-    obs=ObservationConfig(exposure_time=5/60,continuum_snr_per_resolution_element=300.,n_lines=1,systematic_floor=10e-6)
+    obs=ObservationConfig(exposure_time=4/n_exposures,continuum_snr_per_resolution_element=300.,n_lines=1,systematic_floor=10e-6)
     grid=build_projected_annulus(na,nr,h)
     velocity=line_of_sight_velocity(grid.positions,12.,90.,0.,(-1,0,0),'observer')
     vlim=np.ceil(max(abs(velocity))/shift_step)*shift_step
@@ -48,9 +48,9 @@ def build_molecular_geometry(na=480,nr=32,nt=1201,shift_step=.25,n_scale_heights
             for dest,w in [(full,weights*region),(missing,weights*blocked*region)]:
                 dest[g,k]=(np.bincount(flat,weights=w*(1-frac),minlength=nr*len(shifts))+
                            np.bincount(flat+1,weights=w*frac,minlength=nr*len(shifts))).reshape(nr,-1)
-    tedges=np.arange(49)*obs.exposure_time-2
-    full=np.array([bin_average(time,a.reshape(nt,-1).T,tedges).T.reshape(48,nr,-1) for a in full])
-    missing=np.array([bin_average(time,a.reshape(nt,-1).T,tedges).T.reshape(48,nr,-1) for a in missing])
+    tedges=np.arange(n_exposures+1)*obs.exposure_time-2
+    full=np.array([bin_average(time,a.reshape(nt,-1).T,tedges).T.reshape(n_exposures,nr,-1) for a in full])
+    missing=np.array([bin_average(time,a.reshape(nt,-1).T,tedges).T.reshape(n_exposures,nr,-1) for a in missing])
     return dict(full=full,missing=missing,shifts=shifts,
         radii=np.sqrt(1+(np.arange(nr)+.5)*((1+h)**2-1)/nr),rp=rp,
         scale=atmospheric_line_depth(atm)*(1+h/2),time=(tedges[:-1]+tedges[1:])/2,
@@ -58,7 +58,8 @@ def build_molecular_geometry(na=480,nr=32,nt=1201,shift_step=.25,n_scale_heights
 
 
 def synthesize(root,na=480,nr=32,nt=1201,dv=.2,shift_step=.25,wing_sigma=100.,n_scale_heights=10.,
-               geometry=None,temperature=640.,co_mixing_ratio=1e-4,wind_km_s=0.,shift_interpolation='linear'):
+               geometry=None,temperature=640.,co_mixing_ratio=1e-4,wind_km_s=0.,shift_interpolation='linear',
+               return_limb_components=False):
     """Scalar atmosphere, or (negative, positive velocity) limb parameters.
 
     Temperature changes excitation, thermal width and hydrostatic slant column,
@@ -74,7 +75,8 @@ def synthesize(root,na=480,nr=32,nt=1201,dv=.2,shift_step=.25,wing_sigma=100.,n_
     x=np.arange(xmin-50,xmax+50+dv/2,dv);nu=4300*np.exp(x/C)
     dvinst=C/100000
     edges=xmin+np.arange(int((xmax-xmin)/dvinst)+1)*dvinst
-    reference=np.zeros((48,len(edges)-1));signal=np.zeros_like(reference)
+    reference=np.zeros((full.shape[1],len(edges)-1));signal=np.zeros_like(reference)
+    limb_reference=np.zeros((len(full),*reference.shape));limb_signal=np.zeros_like(limb_reference)
     profiles=[];columns=[]
     ng=len(full)
     temps=np.broadcast_to(temperature,(ng,));abundances=np.broadcast_to(co_mixing_ratio,(ng,))
@@ -94,13 +96,17 @@ def synthesize(root,na=480,nr=32,nt=1201,dv=.2,shift_step=.25,wing_sigma=100.,n_
             else:
                 library=np.array([np.interp(x-s-wind,x,broadened,left=0,right=0) for s in shifts])
                 library=bin_average(x,library,edges)
-            reference+=full[g,:,j]@library
-            signal-=missing[g,:,j]@library
-    return dict(reference=scale*reference,signal=scale*signal,noise=noise,
+            contribution=full[g,:,j]@library;deficit=-missing[g,:,j]@library
+            reference+=contribution;signal+=deficit
+            if return_limb_components:
+                limb_reference[g]+=contribution;limb_signal[g]+=deficit
+    result=dict(reference=scale*reference,signal=scale*signal,noise=noise,
         time=geometry['time'],wavenumber=4300*np.exp((edges[:-1]+edges[1:])/2/C),
         input_wavenumber=nu,local_profiles=np.array(profiles),column_cm2=np.array(columns),
         n_lines=len(lines.wavenumber),partition=lines.partition,
         retained_strength_fraction=lines.retained_strength_fraction,annulus_area_scale=scale)
+    if return_limb_components:result.update(limb_reference=scale*limb_reference,limb_signal=scale*limb_signal)
+    return result
 
 
 def main():
