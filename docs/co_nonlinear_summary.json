@@ -1,0 +1,94 @@
+{
+  "cache_key": "ca266ce49e07be67",
+  "seed": 63122,
+  "n_noise_pairs": 16,
+  "known_orbit": true,
+  "native_noise_ppm": 1490.7455256421945,
+  "control_noise_ppm": 11.394654178131821,
+  "control": "physical opaque moon, all Gaussian noise reduced by 130.8285; not instrument forecast",
+  "bounds": {
+    "temperature_K": [
+      560,
+      720
+    ],
+    "CO_mixing_ratio": [
+      3.3333333333333335e-05,
+      0.0003
+    ],
+    "wind_km_s": [
+      -1.5,
+      1.5
+    ],
+    "blocking": [
+      0,
+      1
+    ]
+  },
+  "temporal_controls": [
+    1,
+    3,
+    5
+  ],
+  "time_window_h": [
+    -2,
+    2
+  ],
+  "no_independent_depth_scale": true,
+  "physical_model": "same isothermal LTE CO, fixed Rp/P0 and two velocity sectors; not equilibrium/circulation",
+  "n_grid_nodes": [
+    5,
+    7,
+    9
+  ],
+  "spectral_rank": 128,
+  "max_independent_emulator_error_control_noise_norm": 0.07483428379102508,
+  "frozen_atmosphere_exposure_check_control_noise_norm": 0.002302487405704065,
+  "local_fisher_controls": [
+    {
+      "n_controls": 1,
+      "rank": 6,
+      "native_local_fisher_snr": 0.0431832438672004,
+      "control_local_fisher_snr": 5.649599063856731
+    },
+    {
+      "n_controls": 3,
+      "rank": 18,
+      "native_local_fisher_snr": 0.04205636192816776,
+      "control_local_fisher_snr": 5.50217078895885
+    },
+    {
+      "n_controls": 5,
+      "rank": 30,
+      "native_local_fisher_snr": 0.0392339626339715,
+      "control_local_fisher_snr": 5.132920520049979
+    }
+  ],
+  "independent_direct_fit_checks": [
+    {
+      "case": "control_moon",
+      "hypothesis": "null",
+      "emulator_error_control_noise_norm": 0.00045129056425320945,
+      "direct_chi2": 30.268530983805906,
+      "emulated_chi2": 30.268499038436996,
+      "minimum_absolute_absorption": 0.0
+    },
+    {
+      "case": "control_atmosphere_moon",
+      "hypothesis": "joint",
+      "emulator_error_control_noise_norm": 0.012302652168774185,
+      "direct_chi2": 6.12781204656471e-08,
+      "emulated_chi2": 6.880641342210537e-07,
+      "minimum_absolute_absorption": 0.0
+    },
+    {
+      "case": "control_wind_pulse",
+      "hypothesis": "null",
+      "emulator_error_control_noise_norm": 0.014361765689058515,
+      "direct_chi2": 202.0481476243571,
+      "emulated_chi2": 202.04661354512825,
+      "minimum_absolute_absorption": 0.0
+    }
+  ],
+  "wind_pulse_scope": "true nonlinear uniform wind addition 0.9 km/s, Gaussian center -1.1 h, sigma .35 h; outside spline family",
+  "root_delta_chi2_is_not_calibrated_sigma": true
+}

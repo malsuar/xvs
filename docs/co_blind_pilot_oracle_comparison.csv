@@ -1,0 +1,13 @@
+stream,family,n_controls,n,fixed_orbit_flags,blind_flags,fixed_only_flags,blind_only_flags
+validation,reference,3,64,0,0,0,0
+validation,reference,5,64,0,0,0,0
+validation,smooth,3,64,0,0,0,0
+validation,smooth,5,64,1,1,1,1
+validation,wind_pulse,3,64,5,4,5,4
+validation,wind_pulse,5,64,4,2,4,2
+injection,showcase_reference,3,32,32,24,8,0
+injection,showcase_reference,5,32,32,24,8,0
+injection,showcase_smooth,3,32,32,24,8,0
+injection,showcase_smooth,5,32,32,25,7,0
+injection,showcase_wind_pulse,3,32,31,23,8,0
+injection,showcase_wind_pulse,5,32,32,23,9,0

@@ -38,6 +38,8 @@ Repository = "https://github.com/malsuar/xvs"
 Issues = "https://github.com/malsuar/xvs/issues"
 
 [project.optional-dependencies]
+molecular = ["scipy>=1.11"]
+observing-data = ["scipy>=1.11", "astropy>=6", "requests>=2.31", "skycalc_cli>=1.6"]
 dev = [
   "pytest>=8",
 ]

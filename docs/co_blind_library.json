@@ -1,0 +1,10 @@
+{
+  "cache_key": "5ed0a6f1a2e0cc1a",
+  "n_positions": 193,
+  "n_geometric_modes": 160,
+  "geometry_relative_frobenius_error": 2.4896909619951458e-05,
+  "spectral_rank": 97,
+  "stellar_moments": 4,
+  "spectral_compression_metric": "actual shadows at three stellar positions; relative squared tail 1e-10",
+  "geometric_scope": "circular aligned equatorial moon, central fully backed transit, both blocking channels union"
+}

@@ -1,0 +1,70 @@
+{
+  "fine_mesh": {
+    "n_azimuths": 960,
+    "n_radii": 80,
+    "n_times": 2401,
+    "spectral_step_km_s": 0.1,
+    "velocity_channel_step_km_s": 0.125,
+    "wing_sigma": 200.0
+  },
+  "signal_map_relative_difference": 0.0006284432698400961,
+  "models": [
+    {
+      "model": "depth",
+      "fine_native_snr": 0.038236311031986575,
+      "relative_snr_change": 0.00047962113976962595,
+      "relative_component_difference": 0.0006528012609747862,
+      "fine_rank_min": 1,
+      "fine_rank_max": 1
+    },
+    {
+      "model": "depth_T",
+      "fine_native_snr": 0.03822952804461638,
+      "relative_snr_change": 0.00047923478022227073,
+      "relative_component_difference": 0.0006534276410432309,
+      "fine_rank_min": 2,
+      "fine_rank_max": 2
+    },
+    {
+      "model": "depth_X",
+      "fine_native_snr": 0.038225416425765525,
+      "relative_snr_change": 0.00047910466603307,
+      "relative_component_difference": 0.0006533449155997265,
+      "fine_rank_min": 2,
+      "fine_rank_max": 2
+    },
+    {
+      "model": "depth_wind",
+      "fine_native_snr": 0.031004881818395023,
+      "relative_snr_change": 0.0005208085771194471,
+      "relative_component_difference": 0.0007265391335110904,
+      "fine_rank_min": 2,
+      "fine_rank_max": 2
+    },
+    {
+      "model": "uniform_linear",
+      "fine_native_snr": 0.030950715290200742,
+      "relative_snr_change": 0.0005156254496172519,
+      "relative_component_difference": 0.0007297854924638306,
+      "fine_rank_min": 4,
+      "fine_rank_max": 4
+    },
+    {
+      "model": "two_limb_linear",
+      "fine_native_snr": 0.013468055842757438,
+      "relative_snr_change": 0.0007192903483496105,
+      "relative_component_difference": 0.001149350070866184,
+      "fine_rank_min": 7,
+      "fine_rank_max": 7
+    },
+    {
+      "model": "two_limb_curvature",
+      "fine_native_snr": 0.012134255858025807,
+      "relative_snr_change": 0.0008198514514287103,
+      "relative_component_difference": 0.001253398934328174,
+      "fine_rank_min": 10,
+      "fine_rank_max": 10
+    }
+  ],
+  "all_snr_changes_below_1percent": true
+}

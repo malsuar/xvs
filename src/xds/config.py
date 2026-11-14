@@ -48,6 +48,14 @@ class SimulationConfig:
     use_illumination_shadow: bool = True
     use_observer_occultation: bool = True
     include_mirrored_terminator: bool = False
+    geometry: str = "legacy"
+    n_azimuths: int = 360
+    n_radii: int = 8
+    spin_convention: str = "legacy"
+    blocking_integration: str = "point"
+    blocking_quadrature_order: int = 16
+    stellar_cell_integration: bool = False
+    time_center: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -82,3 +90,17 @@ class ObservationConfig:
     n_transits: int = 1
     n_lines: int = 30
     systematic_floor: float = 0.0
+    snr_reference_exposure_time: float = 1.0 / 60.0
+    snr_reference_resolution: float = 100_000.0
+    exposure_start_offset: float = 0.0
+
+
+@dataclass(frozen=True)
+class StellarSurfaceConfig:
+    """Quadratic continuum intensity and circular transit geometry in Rp/h."""
+    radius_rp: float
+    orbital_separation_rp: float
+    orbital_period_hours: float
+    impact_parameter: float = 0.0
+    u1: float = 0.0
+    u2: float = 0.0

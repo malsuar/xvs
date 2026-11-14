@@ -1,0 +1,23 @@
+{
+  "procedure_fingerprint": "02c59d7d97449e1833cdb7fe670423645edac5703206a0ba41b325ff69f42811",
+  "scenario_data_sets": 912,
+  "underlying_paired_realizations": 456,
+  "searches": 1824,
+  "versions": {
+    "numpy": "1.26.4",
+    "scipy": "1.15.3"
+  },
+  "sha256": {
+    "scripts/observing_contamination_pilot.py": "ca7be965b7779d022287591ac3a8623eaa413932c8bc72a4543b17d4730797af",
+    "src/xds/observing_contamination.py": "4392e729f6bcc74a4c83f154c1f23369283f6b8da86f574ba432f7cb4546c97d",
+    "src/xds/orbit_search.py": "c5807f9a7f45de6778088f2048a7eef7db7dc09d39e4a9d9b0953e28ee07eff6",
+    "src/xds/nonlinear_atmosphere.py": "695237b43c92849b8f255dcf7f4a10b9472b7d52a85a586b1a7e0b4c2129f83c",
+    "src/xds/moving_shadow.py": "89dff6cc474ac38d6284404f25ee933305125763d2e369938728173bf8b2c3bc",
+    "data/observing/skycalc_paranal.csv": "c5d32f0719cbc4fec1bb61061460ce9d1d7453cedde2d1c1c62b5313615059d7",
+    "data/observing/phoenix_5700_4p5.csv": "4d1e272870cd97b1d3ece563a04e7611412f215ef1247fde7b78879a8f67af53",
+    "outputs/co_nonlinear_emulator.npz": "2f901c74e99ef98c156ce286457972163fa3d27b897a729c7abb0785a62ecd46",
+    "outputs/co_blind_shadow.npz": "b0d55ae8828ca59dfe1ae8e6c3b804aa3b4b75fc67aa829530c089925c9a1ba8",
+    "docs/co_blind_library.json": "bed7762b750be1d701805c311360a9b7b5bb325a2b7515d8e7f176e375b00426",
+    "scripts/blind_co_recovery.py": "194d7f9916c7c77cf8e78f16190b84010bfeaec9dbc5cd171faa915fb3f44777"
+  }
+}

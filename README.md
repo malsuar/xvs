@@ -100,6 +100,90 @@ not required for installation. Regenerate them from the scripts above.
 
 ## Scientific Scope
 
+### Molecular Injection Pilot
+
+A separate CO line-by-line pilot uses traceable ExoMol data, radial atmospheric
+opacity, instrumental resolution and exposure integration. It compares a
+known-trajectory lunar signal with independent line-depth changes per exposure:
+
+```bash
+python -m pip install -e '.[molecular]'
+python scripts/fetch_co_template_data.py
+PYTHONPATH=src python scripts/molecular_injection_recovery.py
+PYTHONPATH=src python scripts/audit_co_template.py
+```
+
+See [the experiment report](docs/co_template_injection_recovery.md) for assumptions,
+convergence and injection controls. The native pilot signal is not detectable
+under the adopted noise assumptions; amplified recovery controls are numerical
+tests, not physical detection predictions. ExoMol data have a separate license.
+
+The follow-up [atmospheric-degeneracy experiment](docs/co_atmospheric_degeneracy.md)
+compares uniform and two-limb temperature, CO abundance and wind changes:
+
+```bash
+PYTHONPATH=src python scripts/atmospheric_nuisance_recovery.py
+PYTHONPATH=src python scripts/audit_atmospheric_nuisance.py
+```
+
+It tests known-orbit recovery after atmospheric fitting, not a blind search or
+a proof of uniqueness against arbitrary atmospheric structure.
+
+The [bounded nonlinear follow-up](docs/co_nonlinear_coherent_recovery.md) fits
+the actual CO family with smooth, bounded atmospheric histories and a coupled
+transparent-to-opaque lunar mask:
+
+```bash
+PYTHONPATH=src python scripts/nonlinear_co_recovery.py --n-mc 16
+```
+
+Its reduced-noise control keeps the physical moon unamplified. Reported
+`sqrt(delta chi2)` values are model separations, not calibrated discovery
+significances. Cached spectral grids can be regenerated and are not tracked.
+
+The next [phase/period-blind pilot](docs/co_blind_search_report.md) calibrates
+a finite score search against independent atmospheric nulls. Its scope and
+predeclared choices are in the [direction review and protocol](docs/research_direction_blind_protocol.md).
+
+```bash
+PYTHONPATH=src python scripts/build_blind_co_library.py
+PYTHONPATH=src python scripts/validate_blind_co.py
+PYTHONPATH=src python scripts/blind_co_recovery.py --tag pilot
+PYTHONPATH=src python scripts/audit_blind_grid.py
+PYTHONPATH=src python scripts/summarize_blind_comparisons.py --tag pilot
+PYTHONPATH=src python scripts/plot_blind_co.py --tag pilot
+```
+
+The [observing-contamination protocol](docs/observing_contamination_protocol.md)
+adds PHOENIX stellar lines, ESO SkyCalc transmission/emission, count-based
+detector noise and an exactly propagated finite shared reference. Stellar/terrestrial
+post-correction amplitudes are explicit sensitivity assumptions, not measured
+pipeline performance. The 39 m scenario is not an instrument forecast.
+
+```bash
+PYTHONPATH=src python scripts/audit_observing_metric.py
+OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python scripts/observing_contamination_pilot.py --tag pilot --workers 3
+PYTHONPATH=src python scripts/audit_contaminated_null_starts.py --tag pilot
+PYTHONPATH=src python scripts/summarize_observing_results.py --tag pilot
+PYTHONPATH=src python scripts/plot_observing_contamination.py --tag pilot
+```
+
+The cropped input spectra and source hashes are in `data/observing/`; their
+attribution and regeneration are described there. This pilot keeps the same
+physical moon and full period/phase search. It does not rerun the population
+search or calibrate a nonlinear global likelihood ratio. Checkpoints resume
+only the same source/configuration and worker partition. Independent nulls
+are required even after nuisance templates are removed, and all orbital
+phases are retained in the randomized-phase injections.
+
+The nonlinear CO emulator from the preceding step is required. The main pilot
+performs 1408 searches on 704 simulated data sets and can take tens of minutes.
+An identical command resumes completed trials; changed code/configuration
+requires a new tag. Empirical probabilities apply to the calibrated score,
+not to the subsequent nonlinear candidate-fit likelihood ratio.
+
+### Limitations
+
 This is a minimal forward model intended for reproducibility and exploratory
 extensions. It is not yet a full retrieval or population-inference framework.
 Current assumptions include a thin effective terminator, solid-body rotation,

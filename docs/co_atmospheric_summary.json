@@ -1,0 +1,68 @@
+{
+  "seed": 63118,
+  "n_noise_realizations": 2000,
+  "n_exposures": 48,
+  "n_bins": 3468,
+  "noise_per_bin_ppm": 1490.7455256421945,
+  "native_full_snr": 0.044308485082241555,
+  "reference_height_scale_temperature_k": 640.0,
+  "domain_scale_heights": 12.0,
+  "n_radial_cells": 40,
+  "per_exposure_free_nuisance": true,
+  "known_lunar_trajectory": true,
+  "controlled_moon_multiplier": 130.8285010091114,
+  "svd_relative_tolerance": 1e-08,
+  "doppler_interpolation": "cubic spline; previous pilot retains linear default",
+  "interpolation_residual_map_relative_change": 0.0006844920586606274,
+  "perturbations": [
+    {
+      "mode": "temperature",
+      "step": 10.0,
+      "derivative_relative_change": 9.997240166909498e-05,
+      "curvature_relative_change": 0.0014371020623754247
+    },
+    {
+      "mode": "log_abundance",
+      "step": 0.1,
+      "derivative_relative_change": 0.00010288138913514326,
+      "curvature_relative_change": 0.0002493940688754324
+    },
+    {
+      "mode": "wind",
+      "step": 0.2,
+      "derivative_relative_change": 0.0014170602336723425,
+      "curvature_relative_change": 0.0011763596564414258
+    },
+    {
+      "mode": "limb_temperature",
+      "step": 10.0,
+      "derivative_relative_change": 9.935266119576446e-05,
+      "curvature_relative_change": 0.0014371020623596957
+    },
+    {
+      "mode": "limb_log_abundance",
+      "step": 0.1,
+      "derivative_relative_change": 0.0001081156956165216,
+      "curvature_relative_change": 0.0002493940688732368
+    },
+    {
+      "mode": "limb_wind",
+      "step": 0.2,
+      "derivative_relative_change": 0.001252088169043658,
+      "curvature_relative_change": 0.0011763596564401647
+    }
+  ],
+  "outer_boundary_checks": [
+    {
+      "alternative": "uniform_T_plus55K",
+      "relative_map_difference": 0.0005268127536842598
+    },
+    {
+      "alternative": "uniform_X_times2p3",
+      "relative_map_difference": 0.0001363571593414684
+    }
+  ],
+  "conventions": "positive wind adds to model velocity; limb order is v_rot<0 then v_rot>=0",
+  "curvature_scope": "separate single-mode second derivatives; no cross derivatives or nonlinear retrieval",
+  "finite_transient_scope": "two-column spectral mixture, Gaussian covering fraction centered -1.1 h, sigma .35 h"
+}

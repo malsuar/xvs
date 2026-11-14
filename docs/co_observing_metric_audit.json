@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "protected": false,
+      "maximum_derivative_relative_error": 4.4418564226429227e-10,
+      "maximum_point_score_absolute_error": 2.7755575615628914e-16,
+      "maximum_grid_score_absolute_error": 5.507971634344244e-09,
+      "spectral_q_orthogonality_error": 8.881784197001252e-16
+    },
+    {
+      "protected": true,
+      "maximum_derivative_relative_error": 3.6604976565890646e-10,
+      "maximum_point_score_absolute_error": 6.661338147750939e-16,
+      "maximum_grid_score_absolute_error": 4.4405817078985166e-09,
+      "spectral_q_orthogonality_error": 1.1102230246251565e-15
+    }
+  ],
+  "shared_reference_whitening_error": 5.995204332975845e-15,
+  "information": [
+    {
+      "scenario": "8m_K6",
+      "protected": false,
+      "whitened_full_signal_norm": 0.034321878846098955,
+      "known_orbit_kinematic_norm": 0.03316858887974366
+    },
+    {
+      "scenario": "8m_K6",
+      "protected": true,
+      "whitened_full_signal_norm": 0.033997123169677616,
+      "known_orbit_kinematic_norm": 0.03283723373472359
+    },
+    {
+      "scenario": "39m_K6",
+      "protected": false,
+      "whitened_full_signal_norm": 0.10820388712174664,
+      "known_orbit_kinematic_norm": 0.10456797467039555
+    },
+    {
+      "scenario": "39m_K6",
+      "protected": true,
+      "whitened_full_signal_norm": 0.10718002911745206,
+      "known_orbit_kinematic_norm": 0.10352330981512678
+    },
+    {
+      "scenario": "39m_K3_invalid",
+      "protected": false,
+      "whitened_full_signal_norm": 0.4433159620574628,
+      "known_orbit_kinematic_norm": 0.42842164683517886
+    },
+    {
+      "scenario": "39m_K3_invalid",
+      "protected": true,
+      "whitened_full_signal_norm": 0.43912351153529844,
+      "known_orbit_kinematic_norm": 0.4241440339787379
+    }
+  ]
+}

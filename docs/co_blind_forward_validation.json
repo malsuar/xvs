@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "period_h": 7.584926514546754,
+      "phase": 0.75,
+      "signal_control_noise_norm": 5.300129347871366,
+      "error_control_noise_norm": 0.0018580896128414495,
+      "relative_signal_error": 0.00035057438996044396,
+      "quadrature8_vs16_control_noise_norm": 0.021142382961641976
+    },
+    {
+      "period_h": 21.238292071543107,
+      "phase": 0.7473,
+      "signal_control_noise_norm": 5.802717844704485,
+      "error_control_noise_norm": 0.002702897518140604,
+      "relative_signal_error": 0.00046579854310980275,
+      "quadrature8_vs16_control_noise_norm": 0.012464307346701764
+    },
+    {
+      "period_h": 86.06262370662553,
+      "phase": 0.75,
+      "signal_control_noise_norm": 6.892208039675822,
+      "error_control_noise_norm": 0.0008439043488057729,
+      "relative_signal_error": 0.00012244324952870493,
+      "quadrature8_vs16_control_noise_norm": 0.006637081064120824
+    },
+    {
+      "period_h": 13.0,
+      "phase": 0.2841,
+      "signal_control_noise_norm": 5.1568921540496815,
+      "error_control_noise_norm": 0.00216625855110767,
+      "relative_signal_error": 0.0004200705553647303,
+      "quadrature8_vs16_control_noise_norm": 0.024129944998243235
+    },
+    {
+      "period_h": 50.0,
+      "phase": 0.21,
+      "signal_control_noise_norm": 4.710398145303697,
+      "error_control_noise_norm": 0.002600645127322752,
+      "relative_signal_error": 0.0005521072841614494,
+      "quadrature8_vs16_control_noise_norm": 0.009425586279938192
+    }
+  ],
+  "passed": true,
+  "exposure_order": 16,
+  "criterion": "absolute error <0.05 control-noise units; <1% for signal norm>0.1"
+}

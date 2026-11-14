@@ -10,6 +10,7 @@ from .config import AtmosphereConfig, InstrumentConfig, ObservationConfig
 from .diagnostics import finite_difference_rate, map_diagnostics
 from .observability import SPEED_OF_LIGHT_KM_S, cadence_report
 from .spectra import XDSResult
+from .observing import observe_residual
 
 BOLTZMANN = 1.380649e-23
 GRAVITATIONAL_CONSTANT = 6.67430e-11
@@ -89,8 +90,32 @@ def detectability_report(
     observation: ObservationConfig,
     instrument: InstrumentConfig,
     active_threshold: float = 1.0e-5,
+    method: str = "observed",
 ) -> DetectabilityReport:
-    """Compute an approximate matched-filter SNR for an XDS map."""
+    """Use independent observing bins, or explicitly request method='legacy'."""
+
+    if method == "observed":
+        depth = atmospheric_line_depth(atmosphere)
+        observed = observe_residual(result, depth, observation, instrument)
+        if observation.n_lines < 1 or observation.n_transits < 1:
+            raise ValueError("line and transit counts must be positive")
+        snr = np.linalg.norm(observed.signal/observed.noise) * np.sqrt(observation.n_lines*observation.n_transits)
+        sampling_notes = []
+        if np.max(np.diff(result.time)) > observation.exposure_time/2:
+            sampling_notes.append("input_time_grid_coarse_relative_to_exposure_check_convergence")
+        if np.max(np.diff(result.velocity)) > observed.velocity_step/4:
+            sampling_notes.append("input_velocity_grid_coarse_relative_to_lsf_check_convergence")
+        return DetectabilityReport(
+            scale_height_km(atmosphere), depth, float(np.max(np.abs(observed.signal))),
+            float(snr), float(np.max(np.abs(observed.signal))/observed.noise),
+            observed.signal.size, observation.exposure_time, observed.velocity_step,
+            1.0, float("nan"),
+            ("exposure_and_lsf_integrated_no_extra_smearing_penalty",
+             "independent_noise_noiseless_reference_equal_independent_lines",
+             "partial_final_bins_discarded", "legacy_cadence_limit_not_evaluated") + tuple(sampling_notes),
+        )
+    if method != "legacy":
+        raise ValueError(f"Unknown detectability method: {method}")
 
     line_depth = atmospheric_line_depth(atmosphere)
     signal = line_depth * result.delta_absorption

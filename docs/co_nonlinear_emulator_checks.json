@@ -1,0 +1,125 @@
+{
+  "cache_key": "ca266ce49e07be67",
+  "checks": [
+    {
+      "test": 0,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.02928767607861576,
+      "max_error_ppm": 0.014031450458411417
+    },
+    {
+      "test": 0,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.02928422587227537,
+      "max_error_ppm": 0.014031450458411417
+    },
+    {
+      "test": 1,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.028213233421706566,
+      "max_error_ppm": 0.007580678377227119
+    },
+    {
+      "test": 1,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.028189924334161436,
+      "max_error_ppm": 0.007592984309748621
+    },
+    {
+      "test": 2,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.030266888476890033,
+      "max_error_ppm": 0.009759969415817206
+    },
+    {
+      "test": 2,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.03022715824522761,
+      "max_error_ppm": 0.009759969415817206
+    },
+    {
+      "test": 3,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.02113072782469881,
+      "max_error_ppm": 0.005887159969618016
+    },
+    {
+      "test": 3,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.021076658506974738,
+      "max_error_ppm": 0.005887159969618016
+    },
+    {
+      "test": 4,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.03236474341215738,
+      "max_error_ppm": 0.007095098011983091
+    },
+    {
+      "test": 4,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.03232519377927804,
+      "max_error_ppm": 0.007095098011983091
+    },
+    {
+      "test": 5,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.03677295507344734,
+      "max_error_ppm": 0.008548138341754
+    },
+    {
+      "test": 5,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.036673362813509615,
+      "max_error_ppm": 0.008548138341754
+    },
+    {
+      "test": 6,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.02016404431235493,
+      "max_error_ppm": 0.005499263729717789
+    },
+    {
+      "test": 6,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.020130623973525833,
+      "max_error_ppm": 0.005499263729717789
+    },
+    {
+      "test": 7,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.03805268556528782,
+      "max_error_ppm": 0.00878029657668493
+    },
+    {
+      "test": 7,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.03791886013866484,
+      "max_error_ppm": 0.00878029657668493
+    },
+    {
+      "test": 8,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.07483428379102508,
+      "max_error_ppm": 0.018760851380148498
+    },
+    {
+      "test": 8,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.07473333242007812,
+      "max_error_ppm": 0.018760851380148498
+    },
+    {
+      "test": 9,
+      "blocking": 0.0,
+      "error_control_noise_norm": 0.024231854158107264,
+      "max_error_ppm": 0.006621228798874462
+    },
+    {
+      "test": 9,
+      "blocking": 1.0,
+      "error_control_noise_norm": 0.02422744679585506,
+      "max_error_ppm": 0.006621228798874462
+    }
+  ]
+}
