@@ -10,6 +10,8 @@ build/
 dist/
 outputs/mplconfig/
 outputs/co_nonlinear_cache/
+outputs/co_blind_cache/
+outputs/co_blind_runs/
 outputs/*.npz
 outputs/*.png
 outputs/*.pdf

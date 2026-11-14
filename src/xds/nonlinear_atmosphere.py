@@ -44,18 +44,7 @@ class CoherentCOModel:
     def evaluate(self,coefficients,blocking,subtract_reference=True):
         if not 0<=blocking<=1:raise ValueError('lunar blocking must lie in [0,1]')
         p=self.trajectory(coefficients)
-        if np.any(abs(p)>1+1e-12):raise ValueError('atmosphere outside lookup bounds')
-        fields=[];derivatives=[]
-        for g in range(2):
-            weights=[s(p[g,:,i]) for i,s in enumerate(self.splines)]
-            def tensor(w):return (w[0][:,:,None,None]*w[1][:,None,:,None]*w[2][:,None,None,:]).reshape(len(self.time),-1)
-            interpolation=[tensor(weights)]
-            for i,spline in enumerate(self.splines):
-                w=weights.copy();w[i]=spline(p[g,:,i],nu=1)
-                interpolation.append(tensor(w))
-            evaluated=(np.stack(interpolation,axis=1)@self.cubes[g]).reshape(len(self.time),4,2,-1)
-            fields.append(evaluated[:,0]);derivatives.append([evaluated[:,i] for i in range(1,4)])
-        fields=np.array(fields)
+        fields,derivatives=self.fields_at(p)
         result=np.sum(fields[:,:,0]+blocking*fields[:,:,1],axis=0)
         if subtract_reference:result-=self.reference
         jac=[]
@@ -64,6 +53,23 @@ class CoherentCOModel:
                 derivative=derivatives[g][i][:,0]+blocking*derivatives[g][i][:,1]
                 jac.extend(derivative*self.temporal[:,k,None] for k in range(self.n_controls))
         return result,np.stack(jac,axis=-1),np.sum(fields[:,:,1],axis=0)
+
+    def fields_at(self,p,derivatives=True):
+        """Physical spectral fields for any bounded history, including non-splines."""
+        p=np.asarray(p)
+        if np.any(abs(p)>1+1e-12):raise ValueError('atmosphere outside lookup bounds')
+        fields=[];jac=[]
+        for g in range(2):
+            weights=[s(p[g,:,i]) for i,s in enumerate(self.splines)]
+            def tensor(w):return (w[0][:,:,None,None]*w[1][:,None,:,None]*w[2][:,None,None,:]).reshape(len(self.time),-1)
+            interpolation=[tensor(weights)]
+            if derivatives:
+                for i,spline in enumerate(self.splines):
+                    w=weights.copy();w[i]=spline(p[g,:,i],nu=1)
+                    interpolation.append(tensor(w))
+            evaluated=(np.stack(interpolation,axis=1)@self.cubes[g]).reshape(len(self.time),len(interpolation),2,-1)
+            fields.append(evaluated[:,0]);jac.append([evaluated[:,i] for i in range(1,len(interpolation))])
+        return np.array(fields),np.array(jac) if derivatives else None
 
 
 def fit_coherent(model,data,noise,starts,with_moon=False,max_nfev=120,fixed_blocking=0.):

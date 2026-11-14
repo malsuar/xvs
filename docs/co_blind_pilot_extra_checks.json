@@ -1,0 +1,7 @@
+{
+  "n_selected_nonlinear_starts": 60,
+  "failed_selected_nonlinear_starts": 0,
+  "note": "oracle comparison only for the predeclared fixed showcase orbit; uniform-phase group excluded",
+  "numerical_zero_visibility_threshold": 1e-12,
+  "visibility_is_diagnostic_not_a_selection_cut": true
+}

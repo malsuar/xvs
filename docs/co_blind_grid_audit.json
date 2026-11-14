@@ -1,0 +1,134 @@
+{
+  "primary_grid": [
+    73,
+    1024
+  ],
+  "fine_grid": [
+    97,
+    1536
+  ],
+  "comparisons": [
+    {
+      "case": "reference",
+      "n_controls": 3,
+      "primary_statistic": 8.663423132995442,
+      "fine_statistic": 8.663423186696887,
+      "relative_statistic_difference": 6.1986404116811346e-09,
+      "primary_period": 10.043132321365958,
+      "fine_period": 10.043137203913112,
+      "primary_phase": 0.020376509938625605,
+      "fine_phase": 0.020376392889950908
+    },
+    {
+      "case": "reference",
+      "n_controls": 5,
+      "primary_statistic": 8.980185229567113,
+      "fine_statistic": 9.003563601113267,
+      "relative_statistic_difference": 0.002596568712333434,
+      "primary_period": 7.625783431760453,
+      "fine_period": 10.041530753288876,
+      "primary_phase": 0.8812111177623253,
+      "fine_phase": 0.020416070733827618
+    },
+    {
+      "case": "smooth",
+      "n_controls": 3,
+      "primary_statistic": 14.086935644080167,
+      "fine_statistic": 14.086934326064501,
+      "relative_statistic_difference": 9.356298793459524e-08,
+      "primary_period": 46.93377085761558,
+      "fine_period": 46.936953146943274,
+      "primary_phase": 0.7468663295367004,
+      "fine_phase": 0.7468671725641685
+    },
+    {
+      "case": "smooth",
+      "n_controls": 5,
+      "primary_statistic": 14.899588870018324,
+      "fine_statistic": 14.8995888702869,
+      "relative_statistic_difference": 1.8025750554011715e-11,
+      "primary_period": 8.681776934844404,
+      "fine_period": 8.681777331940129,
+      "primary_phase": 0.5096718438120734,
+      "fine_phase": 0.5096718465191541
+    },
+    {
+      "case": "wind_pulse",
+      "n_controls": 3,
+      "primary_statistic": 13.687807987646945,
+      "fine_statistic": 13.687807987229148,
+      "relative_statistic_difference": 3.052332065586457e-11,
+      "primary_period": 7.584926514546756,
+      "fine_period": 7.584926514546756,
+      "primary_phase": 0.41496743987073065,
+      "fine_phase": 0.4149674975330356
+    },
+    {
+      "case": "wind_pulse",
+      "n_controls": 5,
+      "primary_statistic": 12.386464850208618,
+      "fine_statistic": 12.386464850272604,
+      "relative_statistic_difference": 5.165812076770895e-12,
+      "primary_period": 24.686509200405748,
+      "fine_period": 24.68651277174234,
+      "primary_phase": 0.2566228819806632,
+      "fine_phase": 0.2566228847382697
+    },
+    {
+      "case": "direct_offgrid",
+      "n_controls": 3,
+      "primary_statistic": 30.167319086999026,
+      "fine_statistic": 30.167319087056235,
+      "relative_statistic_difference": 1.89640147354927e-12,
+      "primary_period": 21.239505407118724,
+      "fine_period": 21.239508240515633,
+      "primary_phase": 0.7472996312808698,
+      "fine_phase": 0.7472996334344721
+    },
+    {
+      "case": "direct_offgrid",
+      "n_controls": 5,
+      "primary_statistic": 26.183183389179995,
+      "fine_statistic": 26.18318338917996,
+      "relative_statistic_difference": 1.3568685006685008e-15,
+      "primary_period": 21.23963229893169,
+      "fine_period": 21.23962427344482,
+      "primary_phase": 0.7472989596052074,
+      "fine_phase": 0.7472989581722091
+    }
+  ],
+  "derivative_checks": [
+    {
+      "limb": 0,
+      "parameter": 0,
+      "relative_error": 9.114482793504894e-11
+    },
+    {
+      "limb": 0,
+      "parameter": 1,
+      "relative_error": 1.9199521641076387e-10
+    },
+    {
+      "limb": 0,
+      "parameter": 2,
+      "relative_error": 1.4471773977943394e-09
+    },
+    {
+      "limb": 1,
+      "parameter": 0,
+      "relative_error": 9.094803083920474e-11
+    },
+    {
+      "limb": 1,
+      "parameter": 1,
+      "relative_error": 1.8887226518277303e-10
+    },
+    {
+      "limb": 1,
+      "parameter": 2,
+      "relative_error": 1.4453582113184274e-09
+    }
+  ],
+  "all_statistic_changes_below_1percent": true,
+  "note": "finite predefined cases, not proof of a continuum global maximum; no retuning after calibration"
+}

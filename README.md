@@ -141,6 +141,25 @@ Its reduced-noise control keeps the physical moon unamplified. Reported
 `sqrt(delta chi2)` values are model separations, not calibrated discovery
 significances. Cached spectral grids can be regenerated and are not tracked.
 
+The next [phase/period-blind pilot](docs/co_blind_search_report.md) calibrates
+a finite score search against independent atmospheric nulls. Its scope and
+predeclared choices are in the [direction review and protocol](docs/research_direction_blind_protocol.md).
+
+```bash
+PYTHONPATH=src python scripts/build_blind_co_library.py
+PYTHONPATH=src python scripts/validate_blind_co.py
+PYTHONPATH=src python scripts/blind_co_recovery.py --tag pilot
+PYTHONPATH=src python scripts/audit_blind_grid.py
+PYTHONPATH=src python scripts/summarize_blind_comparisons.py --tag pilot
+PYTHONPATH=src python scripts/plot_blind_co.py --tag pilot
+```
+
+The nonlinear CO emulator from the preceding step is required. The main pilot
+performs 1408 searches on 704 simulated data sets and can take tens of minutes.
+An identical command resumes completed trials; changed code/configuration
+requires a new tag. Empirical probabilities apply to the calibrated score,
+not to the subsequent nonlinear candidate-fit likelihood ratio.
+
 ### Limitations
 
 This is a minimal forward model intended for reproducibility and exploratory

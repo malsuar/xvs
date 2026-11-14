@@ -1,0 +1,41 @@
+{
+  "seed": 63140,
+  "n_calibration": 128,
+  "n_validation": 64,
+  "n_injections": 32,
+  "n_periods": 73,
+  "n_phases": 1024,
+  "models": [
+    3,
+    5
+  ],
+  "noise_ppm": 11.394654178131821,
+  "period_bounds": [
+    7.584926514546754,
+    86.06262370662553
+  ],
+  "phase_bounds": [
+    0.0,
+    1.0
+  ],
+  "true_period": 21.238292071543107,
+  "true_phase": 0.7473,
+  "detection_statistic": "max bounded efficient-score gain after nonlinear null fit, top3 local score refinements",
+  "generators": [
+    "reference",
+    "smooth",
+    "wind_pulse"
+  ],
+  "alpha": 0.05,
+  "procedure_fingerprint": "820f993e460002c389a2e01d5efa44eb91d3eb30a96e00879c69649e97bf9f9b",
+  "tag": "pilot",
+  "n_grid_templates": 74752,
+  "empirical_p_resolution": 0.007751937984496124,
+  "represented_null": "maximum tail probability across three specified generative distributions, not all possible atmospheres",
+  "nonlinear_refit_fap_calibrated": false,
+  "score_fap_calibrated": true,
+  "physical_scope": "unknown period and phase; fixed circular aligned orbit family, moon radius and host",
+  "max_null_start_spread": 1.1321517376927659e-06,
+  "refinement_limit_count": 228,
+  "native_noise_blind_calibration": false
+}
