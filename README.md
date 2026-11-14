@@ -154,6 +154,28 @@ PYTHONPATH=src python scripts/summarize_blind_comparisons.py --tag pilot
 PYTHONPATH=src python scripts/plot_blind_co.py --tag pilot
 ```
 
+The [observing-contamination protocol](docs/observing_contamination_protocol.md)
+adds PHOENIX stellar lines, ESO SkyCalc transmission/emission, count-based
+detector noise and an exactly propagated finite shared reference. Stellar/terrestrial
+post-correction amplitudes are explicit sensitivity assumptions, not measured
+pipeline performance. The 39 m scenario is not an instrument forecast.
+
+```bash
+PYTHONPATH=src python scripts/audit_observing_metric.py
+OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python scripts/observing_contamination_pilot.py --tag pilot --workers 3
+PYTHONPATH=src python scripts/audit_contaminated_null_starts.py --tag pilot
+PYTHONPATH=src python scripts/summarize_observing_results.py --tag pilot
+PYTHONPATH=src python scripts/plot_observing_contamination.py --tag pilot
+```
+
+The cropped input spectra and source hashes are in `data/observing/`; their
+attribution and regeneration are described there. This pilot keeps the same
+physical moon and full period/phase search. It does not rerun the population
+search or calibrate a nonlinear global likelihood ratio. Checkpoints resume
+only the same source/configuration and worker partition. Independent nulls
+are required even after nuisance templates are removed, and all orbital
+phases are retained in the randomized-phase injections.
+
 The nonlinear CO emulator from the preceding step is required. The main pilot
 performs 1408 searches on 704 simulated data sets and can take tens of minutes.
 An identical command resumes completed trials; changed code/configuration

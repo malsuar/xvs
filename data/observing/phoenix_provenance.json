@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "url": "https://phoenix.astro.physik.uni-goettingen.de/data/v2.0/HiResFITS/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",
+      "sha256": "9befb317a6d37bf8cf031e9ef1ba8a942f2f13786c953348f437aaffadf60f73"
+    },
+    {
+      "url": "https://phoenix.astro.physik.uni-goettingen.de/data/v2.0/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte05700-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits",
+      "sha256": "9ae75d3060d71e0cfecec968ea344daebefd43f781957f7407dabd17e18f41b1"
+    }
+  ],
+  "model": "PHOENIX-ACES 5700 K, logg 4.5, solar metallicity; surface flux, not specific intensity"
+}

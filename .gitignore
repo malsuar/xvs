@@ -12,6 +12,8 @@ outputs/mplconfig/
 outputs/co_nonlinear_cache/
 outputs/co_blind_cache/
 outputs/co_blind_runs/
+outputs/co_observing_runs/
+data/observing/*.fits
 outputs/*.npz
 outputs/*.png
 outputs/*.pdf

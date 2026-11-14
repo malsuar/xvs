@@ -1,0 +1,24 @@
+{
+  "seed": 63150,
+  "n_calibration": 64,
+  "n_validation": 32,
+  "n_injections": 24,
+  "n_reference": 12,
+  "n_controls": 3,
+  "n_periods": 73,
+  "n_phases": 1024,
+  "alpha": 0.05,
+  "kept_bins": 3455,
+  "families": [
+    "atmosphere",
+    "stellar",
+    "telluric",
+    "combined"
+  ],
+  "levels": [
+    "control",
+    "39m_K6"
+  ],
+  "assumptions": "R100000; count table specifies live time/reads; one-hour shared OOT; fixed median airmass1.3",
+  "fingerprint": "02c59d7d97449e1833cdb7fe670423645edac5703206a0ba41b325ff69f42811"
+}
